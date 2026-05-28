@@ -4,6 +4,8 @@ Application web de récompenses pour enfants — Gestion de tâches, points et c
 
 Les parents créent des tâches, les enfants les accomplissent, gagnent des points et les échangent contre des récompenses (temps d'écran, argent, etc.).
 
+![Capture d'écran](Capture.jpg)
+
 ## Fonctionnalités
 
 - **Tâches** : Création, assignment, cycle complet (proposée → en cours → terminée → validée/refusée)
