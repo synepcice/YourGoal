@@ -1,5 +1,7 @@
 # YourGoal 🎯
 
+> **Note** : Cette application a été réalisée intégralement en **Vibe Coding** via OpenCode + DeepSeek V4.
+
 ![Capture d'écran](Capture.jpg)
 
 **YourGoal** est une application web de gestion de tâches et récompenses pour enfants. Les parents créent des tâches, les enfants les accomplissent, gagnent des points et les échangent contre des récompenses (temps d'écran, argent de poche, etc.).
