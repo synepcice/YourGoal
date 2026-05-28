@@ -1,0 +1,23 @@
+{
+  "name": "YourGoal",
+  "short_name": "YourGoal",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#ccff00",
+  "description": "Systeme de recompenses pour enfants",
+  "icons": [
+    {
+      "src": "/static/Logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/Logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

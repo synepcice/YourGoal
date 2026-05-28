@@ -1,0 +1,62 @@
+PROCEDURE D'INSTALLATION SUR ZIMAOS (YOURGOAL)
+===============================================
+
+1. PREPARATION
+--------------
+Sur ZimaOS, cree le dossier :
+  /media/ZimaOS-HD/AppData/yourgoal-server
+
+Depose TOUS les fichiers du projet dans ce dossier :
+  - server.py
+  - requirements.txt
+  - templates/index.html
+  - templates/login.html
+  - static/Rainbow.jpeg
+  - static/manifest.json
+  - static/sw.js
+
+2. METHODE "ZERO-BUILD" (RECOMMANDEE)
+-------------------------------------
+Dans l'App Store de ZimaOS, utilise "Import YAML" avec cette config :
+
+```yaml
+name: yourgoal-server
+services:
+  yourgoal-server:
+    container_name: yourgoal-server
+    image: python:3.11-slim
+    command:
+      - sh
+      - -c
+      - pip install -r requirements.txt && python server.py
+    working_dir: /app
+    ports:
+      - target: 5001
+        published: "5001"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /media/ZimaOS-HD/AppData/yourgoal-server
+        target: /app
+    restart: unless-stopped
+    network_mode: bridge
+```
+
+3. PREMIER LANCEMENT
+--------------------
+1. Va sur http://IP_DE_TON_ZIMAOS:5001
+2. Inscris-toi en tant que Parent → Tu seras automatiquement Admin
+3. Dans "Utilisateurs", ajoute tes enfants et l'autre parent
+4. Cree des compteurs (ex: "Temps d'ecran" / "Minutes" / division 10)
+5. Ajoute des recompenses (ex: "10 min ecran" = 10 pts)
+6. Cree des taches (ex: "Ranger la chambre" = 10 pts)
+
+4. PORT
+-------
+Port = 5001 (different de ShareCal qui est sur 5000)
+
+5. MISE A JOUR
+--------------
+Pour mettre a jour le serveur :
+1. Remplace les fichiers dans /media/ZimaOS-HD/AppData/yourgoal-server
+2. Dans l'App Store ZimaOS, Restart le conteneur

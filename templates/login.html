@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YourGoal - Connexion</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#ccff00">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --glass-bg: rgba(20, 20, 30, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #ccff00;
+            --primary-dim: #99cc00;
+            --text: #ffffff;
+            --text-dim: #aaaaaa;
+        }
+        * { box-sizing: border-box; }
+        body {
+            background: #111;
+            background: url('/static/Rainbow.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px 32px;
+            width: 92%;
+            max-width: 380px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+            text-align: center;
+        }
+        h1 { margin: 0 0 5px; font-weight: 300; letter-spacing: 3px; font-size: 2rem; }
+        .subtitle { color: var(--primary); font-size: 0.85rem; margin-bottom: 25px; letter-spacing: 1px; }
+        input, select {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid #555;
+            padding: 12px 14px;
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 12px;
+            outline: none;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus { border-color: var(--primary); background: rgba(0,0,0,0.6); }
+        select option { background: #222; color: white; }
+        button {
+            width: 100%;
+            padding: 13px;
+            border-radius: 10px;
+            border: none;
+            background: var(--primary);
+            color: #111;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        button:active { transform: scale(0.97); }
+        button:hover { opacity: 0.9; }
+        .links { margin-top: 18px; font-size: 0.9em; color: var(--text-dim); }
+        a { color: var(--primary); text-decoration: none; cursor: pointer; font-weight: bold; }
+        .error, .message {
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 0.85em;
+        }
+        .error { background: rgba(231,76,60,0.3); border: 1px solid #e74c3c; color: #ffcccc; }
+        .message { background: rgba(46,204,113,0.2); border: 1px solid #2ecc71; color: #d5f5e3; }
+        .role-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .role-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid #555;
+            background: transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .role-btn.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(204,255,0,0.1);
+        }
+        .role-btn i { margin-right: 6px; }
+        .extra-fields { display: none; }
+        .watermark-logo {
+            position: fixed; bottom: 16px; right: 16px; z-index: 5;
+            width: 48px; height: 48px; opacity: 0.25; pointer-events: none;
+            border-radius: 10px; object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-card">
+        <h1>YourGoal</h1>
+        <div class="subtitle"><i class="fas fa-star"></i> Recompenser les efforts</div>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+        {% if message %}
+        <div class="message">{{ message }}</div>
+        {% endif %}
+
+        <form method="POST" id="login-form">
+            <input type="text" name="username" placeholder="Nom d'utilisateur" required autofocus>
+            <input type="password" name="password" placeholder="Mot de passe" required>
+
+            <div id="register-fields" style="display:none;">
+                <input type="text" name="display_name" placeholder="Prenom (affichage)">
+                <div class="role-toggle">
+                    <button type="button" class="role-btn active" data-role="child" onclick="selectRole('child')">
+                        <i class="fas fa-child"></i> Enfant
+                    </button>
+                    <button type="button" class="role-btn" data-role="parent" onclick="selectRole('parent')">
+                        <i class="fas fa-user-tie"></i> Parent
+                    </button>
+                </div>
+                <input type="hidden" name="role" id="role-input" value="child">
+            </div>
+
+            <button type="submit" name="action" value="login" id="submit-btn">SE CONNECTER</button>
+
+            <div class="links">
+                <span id="toggle-text">Pas de compte ?</span>
+                <a onclick="toggleMode()">Creer un compte</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let isRegister = false;
+
+        function toggleMode() {
+            isRegister = !isRegister;
+            const btn = document.getElementById('submit-btn');
+            const toggleText = document.getElementById('toggle-text');
+            const link = document.querySelector('a');
+            const regFields = document.getElementById('register-fields');
+
+            if (isRegister) {
+                btn.innerText = "S'INSCRIRE";
+                btn.value = "register";
+                btn.name = "action";
+                toggleText.innerText = "Deja un compte ?";
+                link.innerText = "Se connecter";
+                btn.style.background = "#9b59b6";
+                regFields.style.display = 'block';
+            } else {
+                btn.innerText = "SE CONNECTER";
+                btn.value = "login";
+                btn.name = "action";
+                toggleText.innerText = "Pas de compte ?";
+                link.innerText = "Creer un compte";
+                btn.style.background = "#ccff00";
+                regFields.style.display = 'none';
+            }
+        }
+
+        function selectRole(role) {
+            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.role-btn[data-role="${role}"]`).classList.add('active');
+            document.getElementById('role-input').value = role;
+        }
+    </script>
+    <img src="/static/Logo.png" class="watermark-logo" alt="">
+</body>
+</html>

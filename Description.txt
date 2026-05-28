@@ -1,0 +1,104 @@
+Voici mon nouveau projet. Alors , il s'agira d'une Application Web (WebApp) de la même manière que l'on a réalisé ShareCal (C'est à dire un Docker intégré dans mon ZimaOS).
+
+L'objectif de cette WebAPP est de récompenser nos enfants quand ils font une bonne action (Ranger la chambre , ranger leur linge , débarrasser la table … etc). Pour cela , voici comment j'imagine le truc.
+
+Si on est Parent :
+Page Principale : Login MDP. donne accès à la suite. (Tout premier lancement , le premier créateur sera Admin).
+Page d'accueil : Directement la liste des taches faites par les enfants.
+Par exemple : Julie a Rangé sa chambre [Valider ?] [Refuser ?] [Ameliorer ?]
+Un bouton : [Créer une nouvelle tâche]
+Si un Parent clique sur [Proposer une nouvelle tache] il voit la liste des taches qu'il a déjà proposé et un dernier bouton : [Créer une nouvelle tâche]
+Par défaut donc , la liste est vide. Elle se rempli des taches qu'ont déjà proposé les Parents.
+Il est d'ailleurs possible de supprimer l'une d'entre elle.
+Une fois choisis la tache (ou créé une nouvelle tache) un autre bouton pour la valeur : 1 point , 2 points etc …
+Un autre bouton (accessible uniquement par l'admin et les parents): [Gestion Utilisateurs] pour ajouter ou supprimer un enfant ou un Parent. (son Login et son MDP choisis par le parent).
+Tout en haut de la page d'accueil , on voit des icones d'enfant avec un chiffre (un nombre de point). ainsi que le prénom en dessous de l'icone.
+Un autre bouton (toujours accessible uniquement pour les parents) : [Gestion Liste Echangeables] Permet de gérer la liste des éléments contre lesquels les enfants peuvent échanger leur points.
+Si on click sur l'icone d'un des enfants , on peut voir la liste des choses qu'ils ont acquises : 50 Minutes d'écran et 4 euros à envoyer sur MoneyWalky par exemple (Ca signifie qu'il y a actuelement 2 compteurs de configurés). On peut alors cliquer sur : [Julie a utilisé 10 Minutes d'écran] ou alors [J'ai envoyé 1 euro sur le MoneyWalky de Julie]. Le compteur s'actualise. Il est également possible d'ajouter d'autre compteurs. Un bouton : Configurer les Compteurs permet de modifier : Le nom du Compteur et la division des paiements. Exemple "Temps d'écran" et division de paiement "10" "Minutes". (Le nom "Minutes" a été choisi par le parent tout comme la valeur 10 afin de proposer comme cadeau des sections de 10 Minutes)
+
+Si on est un enfant :
+Page Principale : Login MDP (donné par le parent).
+Page d'accueil : Ici , on voit la liste des taches proposés par les parents ainsi que les icones des enfants (dont la notre puisqu'on est alors un enfant) avec le nombre de point qu'on a.
+Bouton : [Utiliser mes points] Donne une liste de choses qu'on peut faire avec les points. (La fameuse liste "Echangeables"
+
+Dans les faits , un exemple :
+Un enfant se connecte , il a 3 points. Il clique sur "Utiliser mes points" et voit la liste suivante :
+10 Minutes d'écran supplémentaire = Prix 10 Points
+1 euro sur MoneyWalky = Prix 12 Points
+Il revient en arriere et voit par exemple : Ranger ma chambre = 10 Points.
+Il click dessus... Le bouton bascule en Orange (il était entouré de Gris jusqu'ici).
+Il ferme l'application et range sa chambre. Il la réouvre et reclick sur le bouton pour clicker sur : "J'ai terminé !" Le bouton bascule en Jaune.
+
+Le parent se connecte , et voit le bouton : Ranger ma chambre de couleur Jaune , il click dessus et voit "Julie pense avoir terminé cette tache". Il vérifie , et trouve que c'est pas parfait. il click sur "Améliorer". Le bouton repasse en Orange ...
+
+Julie refait sa chambre mieux , et reclick sur le Bouton "J'ai terminé".
+Le parent réouvre l'appli , vérifie la chambre , il est content , elle est bien rangé , il click sur "Valider".
+Julie voit le bouton devenir Vert. Elle click dessus pour obtenir sa récompense : 10 Points.
+Le bouton disprait. Son compteur de Points augmente de 10 Points , elle passe à 13.
+
+Elle click sur "Utiliser mes Points" et sur "1 euro sur MoneyWalky".
+Elle Voit alors son compteur diminuer de 12 points (elle passe à 1 point).
+Et son compteur de "MoneyWalky Attendu" passer à 1. (il était à Zéro).
+
+Le parent se connecte , il envoit 1 euro sur MoneyWalky et click sur la WebAPP pour valider qu'il a bien envoyé 1 euro. Le compteur de "MoneyWalky attendu" par Julie passe à 0.
+
+Voilà le principe.
+En gros , les récompenses se gère avec des Compteurs de Valeur.
+Les Taches avec une liste éditable.
+
+Je voudrais que le fond d'écran de la WebAPP soit l'image Rainbow que je te propose (Rainbow.jpg). Tu peux également t'inspirer de la WebAPP ShareCal (tu trouveras dans le dossier : "Pour S'inspirer" tout le contenu) afin de gagner du temps sur le code. Sachant que cette appli fonctionne parfaitement.
+
+=========================================
+      HISTORIQUE DES DÉVELOPPEMENTS
+=========================================
+
+v1.0 — 28/05/2026
+-------------------
+- Création complète du projet YourGoal basé sur l'architecture ShareCal (Flask + PWA)
+- Port modifié en 5001 pour coexister avec ShareCal
+- Backend : Auth (parent/enfant/admin), CRUD tâches, système de points, compteurs, récompenses
+- Frontend : Interface glassmorphism, fond Rainbow.jpeg, responsive mobile
+- Déploiement : Dockerfile + docker-compose.yml pour ZimaOS
+
+v1.1 — 28/05/2026
+-------------------
+- Avatars émojis (30 animaux) pour enfants et parents
+- Paramètres utilisateur avec sélecteur d'avatar
+- Les parents peuvent changer l'avatar de leurs enfants depuis Gestion Utilisateurs
+- Icône de l'enfant corrigée dans ses propres badges
+
+v1.2 — 28/05/2026
+-------------------
+- Suggestions de tâches : liste déroulante des tâches déjà créées au clic sur "Nouvelle tâche"
+- La liste apparaît au-dessus du champ (pour être visible en bas de page)
+
+v1.3 — 28/05/2026
+-------------------
+- Bouton "Modifier" sur les compteurs avec confirmation avant édition
+- Fusion Compteurs/Récompenses : un compteur a désormais un prix en points
+- Suppression de la séparation "Échangeables" : l'enfant achète directement les compteurs
+- Logo.png affiché dans la barre d'en-tête + favicon.ico
+- Redimensionnement adaptatif des boutons en mode fenêtré
+
+v1.4 — 28/05/2026
+-------------------
+- Ajout des tâches récurrentes (case à cocher "🔄" au moment de la création)
+- Une tâche récurrente ne disparaît pas quand l'enfant récupère ses points
+- Elle se réinitialise automatiquement en "À faire" pour être rejouée
+- Icône 🔄 visible à côté du titre dans la liste des tâches
+
+v1.5 — 28/05/2026
+-------------------
+- Historique des tâches complétées (onglet "Historique" dans la vue détail enfant)
+- Chaque validation de points enregistre le titre, les points et la date
+- Affichage des 40 dernières entrées, triées de la plus récente à la plus ancienne
+
+v1.6 — 28/05/2026
+-------------------
+- Édition manuelle des points d'un enfant depuis sa vue détail
+- Cliquer sur l'icône "Refusée" (cercle rouge) réinitialise la tâche en "À faire"
+- Nouvel endpoint API /api/tasks/reset pour la réinitialisation
+
+=========================================
+      DERNIÈRE MISE À JOUR : 28/05/2026
+=========================================
