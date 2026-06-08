@@ -448,11 +448,11 @@
             }
             // History log
             const log = appState.history_log || [];
+            html += `<div style="width:100%;max-width:500px;margin-top:16px;">
+                <h3 style="font-size:0.85rem;color:var(--text-dim);margin:0 0 8px;letter-spacing:1px;">Historique</h3>`;
             if (log.length > 0) {
+                html += `<div style="max-height:240px;overflow-y:auto;background:var(--glass-bg);border-radius:12px;padding:6px 0;">`;
                 const displayLog = log.slice(-50).reverse();
-                html += `<div style="width:100%;max-width:500px;margin-top:16px;">
-                    <h3 style="font-size:0.85rem;color:var(--text-dim);margin:0 0 8px;letter-spacing:1px;">Historique</h3>
-                    <div style="max-height:240px;overflow-y:auto;background:var(--glass-bg);border-radius:12px;padding:6px 0;">`;
                 for (const entry of displayLog) {
                     const actor = appState.allUsers.find(u => u.username === entry.actor)?.display_name || entry.actor;
                     const target = appState.allUsers.find(u => u.username === entry.target)?.display_name || entry.target;
@@ -464,8 +464,11 @@
                         <span><span style="color:${entry.delta > 0 ? 'var(--green)' : 'var(--red)'};font-weight:600;">${sign}${entry.delta}</span> <span style="color:var(--text-dim);font-size:0.65rem;">${dateStr}</span></span>
                     </div>`;
                 }
-                html += `</div></div>`;
+                html += `</div>`;
+            } else {
+                html += `<div style="text-align:center;color:var(--text-dim);font-size:0.8rem;padding:12px;">Aucune activite pour le moment.</div>`;
             }
+            html += `</div>`;
             return html;
         }
 
