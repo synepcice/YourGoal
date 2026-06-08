@@ -126,23 +126,6 @@
             letter-spacing: 4px;
             margin-bottom: 20px;
         }
-        .btn-values {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            color: var(--text);
-            padding: 14px 32px;
-            border-radius: 14px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
-            width: 100%;
-            max-width: 300px;
-        }
-        .btn-values:hover { background: rgba(255,255,255,0.12); }
-        .btn-values i { color: var(--primary); margin-right: 8px; }
-
         /* ─── PARENT VIEW ─── */
         .parent-list {
             width: 100%;
@@ -291,18 +274,6 @@
         .value-row input.vunit { flex: 1; }
         .value-row .del-btn { height: 36px; align-self: flex-start; }
 
-        .value-display {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .value-display:last-child { border-bottom: none; }
-        .value-display .vd-name { font-weight: 500; }
-        .value-display .vd-rate { color: var(--primary); font-weight: 600; font-size: 1rem; }
-        .value-display .vd-detail { font-size: 0.8rem; color: var(--text-dim); }
-
         .avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 12px 0; }
         .avatar-opt {
             font-size: 1.8rem; padding: 8px; text-align: center;
@@ -413,9 +384,26 @@
                 <div class="avatar-big">${av}</div>
                 <div class="name-big">${esc(u.display_name)}</div>
                 <div class="points-big">${u.points}</div>
-                <div class="points-label">Points</div>
-                <button class="btn-values" onclick="window.showValuesView()"><i class="fas fa-table"></i> Tableau des Valeurs</button>
-            </div>`;
+                <div class="points-label" style="margin-bottom:4px;">Points</div>`;
+            const vt = appState.valueTable;
+            if (vt.length > 0) {
+                html += `<div style="width:100%;max-width:350px;margin-top:4px;">
+                    <h3 style="font-size:0.8rem;color:var(--text-dim);margin:0 0 6px;text-align:center;letter-spacing:1px;">Valeurs</h3>`;
+                for (const v of vt) {
+                    const pts = v.points || 0;
+                    const val = v.value || 1;
+                    const unit = v.unit || '';
+                    const detail = unit ? `${val} ${esc(unit)}` : val;
+                    html += `<div style="display:flex;justify-content:space-between;align-items:center;background:var(--glass-bg);border-radius:10px;padding:6px 12px;margin-bottom:3px;font-size:0.85rem;">
+                        <span style="font-weight:500;">${esc(v.name)}</span>
+                        <span><span style="color:var(--primary);font-weight:600;">${pts} pts</span> <span style="color:var(--text-dim);">= ${detail}</span></span>
+                    </div>`;
+                }
+                html += `</div>`;
+            } else {
+                html += `<div style="text-align:center;color:var(--text-dim);font-size:0.8rem;margin-top:8px;">Aucune valeur configuree</div>`;
+            }
+            html += `</div>`;
             return html;
         }
 
@@ -470,33 +458,6 @@
                 if (u) u.points = res.points;
                 render();
             }
-        };
-
-        window.showValuesView = function() {
-            const overlay = document.getElementById('modal-overlay');
-            const content = document.getElementById('modal-content');
-            const vt = appState.valueTable;
-            let html = `<button class="modal-close" onclick="closeModal()">&times;</button>
-                <h2><i class="fas fa-table"></i> Tableau des Valeurs</h2>`;
-            if (vt.length === 0) {
-                html += `<p style="color:var(--text-dim);text-align:center;">Aucune valeur configuree.</p>`;
-            } else {
-                for (const v of vt) {
-            const pts = v.points || 0;
-            const val = v.value || 1;
-            const unit = v.unit || '';
-            const detail = unit ? `${val} ${esc(unit)}` : val;
-            html += `<div class="value-display">
-                        <div>
-                            <div class="vd-name">${esc(v.name)}</div>
-                            <div class="vd-detail">${detail}</div>
-                        </div>
-                        <div class="vd-rate">${pts} pts</div>
-                    </div>`;
-                }
-            }
-            content.innerHTML = html;
-            overlay.classList.add('open');
         };
 
         window.showEditValues = function() {
