@@ -301,7 +301,7 @@ def adjust_points():
         if len(state["history_log"]) > 50:
             state["history_log"] = state["history_log"][-50:]
         save_data()
-        return jsonify({"status": "ok", "points": state["users"][username]["points"]})
+        return jsonify({"status": "ok", "points": state["users"][username]["points"], "history_log": state["history_log"]})
     return jsonify({"status": "error"}), 404
 
 

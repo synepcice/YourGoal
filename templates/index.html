@@ -11,6 +11,9 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -333,9 +336,11 @@
         }
 
         function api(path, options = {}) {
+            const sep = path.includes('?') ? '&' : '?';
+            const cachePath = path + sep + '_t=' + Date.now();
             const defaults = { credentials: 'same-origin', headers: { 'Content-Type': 'application/json' } };
             if (options.body) options.body = JSON.stringify(options.body);
-            return fetch(path, { ...defaults, ...options }).then(r => {
+            return fetch(cachePath, { ...defaults, ...options }).then(r => {
                 if (r.redirected && r.url.endsWith('/login')) { window.location = '/login'; return null; }
                 return r.json();
             });
@@ -475,6 +480,11 @@
         window.adjustPoints = async function(username, delta) {
             const res = await api('/api/users/adjust_points', { method: 'POST', body: { username, delta } });
             if (res && res.status === 'ok') {
+                if (res.history_log) appState.history_log = res.history_log;
+                const child = appState.children.find(c => c.username === username);
+                if (child) child.points = res.points;
+                const u = appState.allUsers.find(x => x.username === username);
+                if (u) u.points = res.points;
                 loadData();
             }
         };
