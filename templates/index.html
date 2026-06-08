@@ -345,8 +345,15 @@
         }
 
         async function loadHistory() {
-            const data = await api('/api/history');
-            if (data) window._historyCache = data.history || [];
+            const box = document.getElementById('history-box');
+            if (!box) return;
+            try {
+                const r = await fetch('/api/history');
+                const text = await r.text();
+                box.textContent = text.trim() || 'Aucune activite pour le moment.';
+            } catch {
+                box.textContent = 'Erreur chargement.';
+            }
         }
 
         async function loadData() {
@@ -456,27 +463,10 @@
                 html += `</div>`;
             }
             // History log
-            const log = window._historyCache || [];
             html += `<div style="width:100%;max-width:500px;margin-top:16px;">
-                <h3 style="font-size:0.85rem;color:var(--text-dim);margin:0 0 8px;letter-spacing:1px;">Historique</h3>`;
-            if (log.length > 0) {
-                html += `<div style="max-height:240px;overflow-y:auto;background:var(--glass-bg);border-radius:12px;padding:6px 0;">`;
-                for (const entry of log) {
-                    const actor = appState.allUsers.find(u => u.username === entry.actor)?.display_name || entry.actor;
-                    const target = appState.allUsers.find(u => u.username === entry.target)?.display_name || entry.target;
-                    const sign = entry.delta > 0 ? '+' : '';
-                    const d = new Date(entry.timestamp);
-                    const dateStr = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-                    html += `<div style="display:flex;justify-content:space-between;padding:5px 14px;font-size:0.75rem;border-bottom:1px solid rgba(255,255,255,0.03);">
-                        <span><span style="font-weight:500;">${esc(actor)}</span> → ${esc(target)}</span>
-                        <span><span style="color:${entry.delta > 0 ? 'var(--green)' : 'var(--red)'};font-weight:600;">${sign}${entry.delta}</span> <span style="color:var(--text-dim);font-size:0.65rem;">${dateStr}</span></span>
-                    </div>`;
-                }
-                html += `</div>`;
-            } else {
-                html += `<div style="text-align:center;color:var(--text-dim);font-size:0.8rem;padding:12px;">Aucune activite pour le moment.</div>`;
-            }
-            html += `</div>`;
+                <h3 style="font-size:0.85rem;color:var(--text-dim);margin:0 0 8px;letter-spacing:1px;">Historique</h3>
+                <div id="history-box" style="max-height:240px;overflow-y:auto;background:var(--glass-bg);border-radius:12px;padding:10px 14px;font-size:0.8rem;white-space:pre-wrap;font-family:inherit;color:var(--text-dim);">Chargement...</div>
+            </div>`;
             return html;
         }
 

@@ -24,34 +24,20 @@ state_lock = threading.RLock()
 
 def append_history(actor, target, delta):
     try:
+        actor_display = state["users"].get(actor, {}).get("display_name", actor)
+        target_display = state["users"].get(target, {}).get("display_name", target)
+        sign = "+" if delta > 0 else ""
+        line = f"{actor_display} a {'ajouté' if delta > 0 else 'retiré'} {sign}{delta} point{'' if abs(delta) == 1 else 's'} à {target_display}\n"
         with HISTORY_FILE_LOCK:
             with open(HISTORY_FILE, "a", encoding="utf-8") as f:
-                f.write(f"{datetime.datetime.now().isoformat()}|{actor}|{target}|{delta}\n")
-    except Exception as e:
-        print(f"Error writing history: {e}")
-
-
-def get_history(limit=50):
-    try:
-        with HISTORY_FILE_LOCK:
-            if not os.path.exists(HISTORY_FILE):
-                return []
+                f.write(line)
             with open(HISTORY_FILE, "r", encoding="utf-8") as f:
                 lines = f.readlines()
-        entries = []
-        for line in lines[-limit:]:
-            parts = line.strip().split("|")
-            if len(parts) == 4:
-                entries.append({
-                    "timestamp": parts[0],
-                    "actor": parts[1],
-                    "target": parts[2],
-                    "delta": int(parts[3]),
-                })
-        return entries
+            if len(lines) > 50:
+                with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+                    f.writelines(lines[-50:])
     except Exception as e:
-        print(f"Error reading history: {e}")
-        return []
+        print(f"Error writing history: {e}")
 
 
 def get_admin_username():
@@ -328,9 +314,16 @@ def adjust_points():
 
 @app.route("/api/history")
 @login_required
-@parent_required
 def history():
-    return jsonify({"history": get_history()})
+    try:
+        with HISTORY_FILE_LOCK:
+            if not os.path.exists(HISTORY_FILE):
+                return "", 200, {"Content-Type": "text/plain; charset=utf-8"}
+            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+                content = f.read()
+        return content, 200, {"Content-Type": "text/plain; charset=utf-8"}
+    except Exception as e:
+        return f"Erreur: {e}", 500, {"Content-Type": "text/plain; charset=utf-8"}
 
 
 # ─── USERS MANAGEMENT ─────────────────────────────────────────────────────────
