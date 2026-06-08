@@ -4,7 +4,6 @@ import os
 import tempfile
 import threading
 import traceback
-import uuid
 from functools import wraps
 
 from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, session, url_for
@@ -17,7 +16,7 @@ app.config["PERMANENT_SESSION_LIFETIME"] = datetime.timedelta(days=30)
 DATA_FILE = "server_data.json"
 ADMIN_FILE = "Admin.txt"
 
-state = {"users": {}, "tasks": [], "rewards": [], "counters": []}
+state = {"users": {}, "value_table": []}
 state_lock = threading.RLock()
 
 
@@ -72,28 +71,18 @@ def load_data():
             if "users" in loaded:
                 state["users"] = loaded["users"]
                 for u in state["users"].values():
-                    if "counters" not in u:
-                        u["counters"] = {}
                     if "points" not in u:
                         u["points"] = 0
-            if "tasks" in loaded:
-                state["tasks"] = loaded["tasks"]
-            if "rewards" in loaded:
-                state["rewards"] = loaded["rewards"]
-            if "counters" in loaded:
-                state["counters"] = loaded["counters"]
+            if "value_table" in loaded:
+                state["value_table"] = loaded["value_table"]
             save_data()
         except Exception as e:
             print(f"Error processing data: {e}")
 
     if not state["users"]:
         state["users"] = {}
-    if not state["tasks"]:
-        state["tasks"] = []
-    if not state["rewards"]:
-        state["rewards"] = []
-    if not state["counters"]:
-        state["counters"] = []
+    if not state["value_table"]:
+        state["value_table"] = []
 
 
 load_data()
@@ -215,9 +204,7 @@ def login():
                 "is_active": is_active,
                 "is_admin": is_admin_user,
                 "points": 0,
-                "counters": {},
                 "avatar": "",
-                "history": [],
             }
             save_data()
 
@@ -253,7 +240,7 @@ def whoami():
     children = []
     if is_parent(session["username"]):
         children = [
-            {"username": u, "display_name": d["display_name"], "points": d.get("points", 0), "counters": d.get("counters", {}), "avatar": d.get("avatar", ""), "history": d.get("history", []), "alerts": d.get("alerts", {})}
+            {"username": u, "display_name": d["display_name"], "points": d.get("points", 0), "avatar": d.get("avatar", "")}
             for u, d in state["users"].items() if d.get("role") == "child"
         ]
     return jsonify({
@@ -262,446 +249,48 @@ def whoami():
         "role": user.get("role"),
         "is_admin": user.get("is_admin", False),
         "points": user.get("points", 0),
-        "counters": user.get("counters", {}),
         "avatar": user.get("avatar", ""),
-        "history": user.get("history", []),
-        "alerts": user.get("alerts", {}),
         "children": children,
+        "value_table": state.get("value_table", []),
         "all_users": [
-            {"username": u, "display_name": d["display_name"], "role": d.get("role"), "points": d.get("points", 0), "counters": d.get("counters", {}), "avatar": d.get("avatar", ""), "history": d.get("history", []), "alerts": d.get("alerts", {})}
+            {"username": u, "display_name": d["display_name"], "role": d.get("role"), "points": d.get("points", 0), "avatar": d.get("avatar", "")}
             for u, d in state["users"].items()
         ] if is_parent(session["username"]) else [],
     })
 
 
-# ─── TASKS ───────────────────────────────────────────────────────────────────
+# ─── VALUE TABLE ──────────────────────────────────────────────────────────────
 
-def task_status_color(status):
-    return {
-        "proposed": "#888888",
-        "in_progress": "#e67e22",
-        "completed": "#f1c40f",
-        "validated": "#2ecc71",
-        "rejected": "#e74c3c",
-    }.get(status, "#888888")
-
-
-@app.route("/api/tasks")
-@login_required
-def list_tasks():
-    user = state["users"][session["username"]]
-    is_par = is_parent(session["username"])
-    tasks = []
-    for t in state["tasks"]:
-        t_out = dict(t)
-        if not is_par:
-            if t.get("assigned_to") and t["assigned_to"] != session["username"]:
-                if t["status"] in ("in_progress", "completed", "validated"):
-                    continue
-            if t["status"] == "rejected":
-                continue
-        t_out["color"] = task_status_color(t["status"])
-        tasks.append(t_out)
-    return jsonify({"tasks": tasks})
-
-
-@app.route("/api/tasks/add", methods=["POST"])
+@app.route("/api/values/save", methods=["POST"])
 @login_required
 @parent_required
-def add_task():
+def save_values():
     data = get_json_body()
-    title = data.get("title", "").strip()
-    if not title:
-        return jsonify({"status": "error", "message": "Titre requis"}), 400
-    try:
-        points = int(data.get("points", 1))
-    except (TypeError, ValueError):
-        points = 1
-    assigned_to = data.get("assigned_to", "").strip().lower()
-
-    recurring = data.get("recurring", False)
-    task = {
-        "id": str(uuid.uuid4()),
-        "title": title,
-        "points": max(1, points),
-        "status": "proposed",
-        "recurring": recurring,
-        "assigned_to": assigned_to if assigned_to and assigned_to in state["users"] else None,
-        "created_by": session["username"],
-        "claimed_by": None,
-        "created_at": datetime.datetime.now().isoformat(),
-    }
-    state["tasks"].append(task)
+    state["value_table"] = data.get("value_table", [])
     save_data()
-    return jsonify({"status": "ok", "task": task})
+    return jsonify({"status": "ok", "value_table": state["value_table"]})
 
 
-@app.route("/api/tasks/claim", methods=["POST"])
-@login_required
-def claim_task():
-    data = get_json_body()
-    task_id = data.get("id")
-    for t in state["tasks"]:
-        if t["id"] == task_id:
-            if t["status"] != "proposed":
-                return jsonify({"status": "error", "message": "Tache deja prise"}), 400
-            if t.get("assigned_to") and t["assigned_to"] != session["username"]:
-                return jsonify({"status": "error", "message": "Tache pas pour toi"}), 400
-            t["status"] = "in_progress"
-            t["claimed_by"] = session["username"]
-            save_data()
-            return jsonify({"status": "ok", "task": t})
-    return jsonify({"status": "error"}), 404
+# ─── POINTS ADJUSTMENT ────────────────────────────────────────────────────────
 
-
-@app.route("/api/tasks/complete", methods=["POST"])
-@login_required
-def complete_task():
-    data = get_json_body()
-    task_id = data.get("id")
-    for t in state["tasks"]:
-        if t["id"] == task_id:
-            if t.get("claimed_by") != session["username"]:
-                return jsonify({"status": "error", "message": "Pas ta tache"}), 400
-            if t["status"] != "in_progress":
-                return jsonify({"status": "error", "message": "Mauvais statut"}), 400
-            t["status"] = "completed"
-            save_data()
-            return jsonify({"status": "ok", "task": t})
-    return jsonify({"status": "error"}), 404
-
-
-@app.route("/api/tasks/validate", methods=["POST"])
+@app.route("/api/users/adjust_points", methods=["POST"])
 @login_required
 @parent_required
-def validate_task():
+def adjust_points():
     data = get_json_body()
-    task_id = data.get("id")
-    for t in state["tasks"]:
-        if t["id"] == task_id:
-            if t["status"] != "completed":
-                return jsonify({"status": "error", "message": "Mauvais statut"}), 400
-            t["status"] = "validated"
-            t["validated_by"] = session["username"]
-            save_data()
-            return jsonify({"status": "ok", "task": t})
-    return jsonify({"status": "error"}), 404
-
-
-@app.route("/api/tasks/reject", methods=["POST"])
-@login_required
-@parent_required
-def reject_task():
-    data = get_json_body()
-    task_id = data.get("id")
-    for t in state["tasks"]:
-        if t["id"] == task_id:
-            if t["status"] != "completed":
-                return jsonify({"status": "error", "message": "Mauvais statut"}), 400
-            t["status"] = "rejected"
-            save_data()
-            return jsonify({"status": "ok", "task": t})
-    return jsonify({"status": "error"}), 404
-
-
-@app.route("/api/tasks/improve", methods=["POST"])
-@login_required
-@parent_required
-def improve_task():
-    data = get_json_body()
-    task_id = data.get("id")
-    for t in state["tasks"]:
-        if t["id"] == task_id:
-            if t["status"] != "completed":
-                return jsonify({"status": "error", "message": "Mauvais statut"}), 400
-            t["status"] = "in_progress"
-            save_data()
-            return jsonify({"status": "ok", "task": t})
-    return jsonify({"status": "error"}), 404
-
-
-@app.route("/api/tasks/claim_points", methods=["POST"])
-@login_required
-def claim_points():
-    data = get_json_body()
-    task_id = data.get("id")
-    for idx, t in enumerate(state["tasks"]):
-        if t["id"] == task_id:
-            if t["status"] != "validated":
-                return jsonify({"status": "error", "message": "Pas encore valide"}), 400
-            child = t.get("claimed_by")
-            if child != session["username"]:
-                return jsonify({"status": "error", "message": "Pas ta tache"}), 400
-            if child in state["users"]:
-                state["users"][child]["points"] = state["users"][child].get("points", 0) + t["points"]
-                if "history" not in state["users"][child]:
-                    state["users"][child]["history"] = []
-                state["users"][child]["history"].append({
-                    "title": t["title"],
-                    "points": t["points"],
-                    "timestamp": datetime.datetime.now().isoformat(),
-                })
-            if t.get("recurring"):
-                t["status"] = "proposed"
-                t["claimed_by"] = None
-            else:
-                state["tasks"].pop(idx)
-            save_data()
-            return jsonify({"status": "ok"})
-    return jsonify({"status": "error"}), 404
-
-
-@app.route("/api/tasks/reset", methods=["POST"])
-@login_required
-@parent_required
-def reset_task():
-    data = get_json_body()
-    task_id = data.get("id")
-    for t in state["tasks"]:
-        if t["id"] == task_id:
-            t["status"] = "proposed"
-            t["claimed_by"] = None
-            save_data()
-            return jsonify({"status": "ok", "task": t})
-    return jsonify({"status": "error"}), 404
-
-
-@app.route("/api/tasks/delete", methods=["POST"])
-@login_required
-@parent_required
-def delete_task():
-    data = get_json_body()
-    task_id = data.get("id")
-    for idx, t in enumerate(state["tasks"]):
-        if t["id"] == task_id:
-            state["tasks"].pop(idx)
-            save_data()
-            return jsonify({"status": "ok"})
-    return jsonify({"status": "error"}), 404
-
-
-# ─── COUNTERS ────────────────────────────────────────────────────────────────
-
-@app.route("/api/counters")
-@login_required
-def list_counters():
-    return jsonify({"counters": state["counters"]})
-
-
-@app.route("/api/counters/add", methods=["POST"])
-@login_required
-@parent_required
-def add_counter():
-    data = get_json_body()
-    name = data.get("name", "").strip()
-    unit = data.get("unit", "").strip()
-    if not name:
-        return jsonify({"status": "error", "message": "Nom requis"}), 400
+    username = (data.get("username") or "").lower().strip()
     try:
-        division = int(data.get("division", 1))
+        delta = int(data.get("delta", 1))
     except (TypeError, ValueError):
-        division = 1
-    try:
-        price = int(data.get("price", 10))
-    except (TypeError, ValueError):
-        price = 10
-    counter = {
-        "id": str(uuid.uuid4()),
-        "name": name,
-        "unit": unit or name,
-        "division": max(1, division),
-        "price": max(1, price),
-        "created_by": session["username"],
-    }
-    state["counters"].append(counter)
-    save_data()
-    return jsonify({"status": "ok", "counter": counter})
-
-
-@app.route("/api/counters/edit", methods=["POST"])
-@login_required
-@parent_required
-def edit_counter():
-    data = get_json_body()
-    counter_id = data.get("id")
-    for c in state["counters"]:
-        if c["id"] == counter_id:
-            if "name" in data and data["name"].strip():
-                c["name"] = data["name"].strip()
-            if "unit" in data and data["unit"].strip():
-                c["unit"] = data["unit"].strip()
-            try:
-                if "division" in data:
-                    c["division"] = max(1, int(data["division"]))
-                if "price" in data:
-                    c["price"] = max(1, int(data["price"]))
-            except (TypeError, ValueError):
-                pass
-            save_data()
-            return jsonify({"status": "ok", "counter": c})
-    return jsonify({"status": "error"}), 404
-
-
-@app.route("/api/counters/delete", methods=["POST"])
-@login_required
-@parent_required
-def delete_counter():
-    data = get_json_body()
-    counter_id = data.get("id")
-    for idx, c in enumerate(state["counters"]):
-        if c["id"] == counter_id:
-            state["counters"].pop(idx)
-            save_data()
-            return jsonify({"status": "ok"})
-    return jsonify({"status": "error"}), 404
-
-
-# ─── CHILD COUNTERS ──────────────────────────────────────────────────────────
-
-@app.route("/api/child_counters", methods=["POST"])
-@login_required
-@parent_required
-def child_counters():
-    data = get_json_body()
-    child_username = data.get("child", "").lower().strip()
-    child = state["users"].get(child_username)
-    if not child or child.get("role") != "child":
-        return jsonify({"status": "error"}), 404
-    return jsonify({"status": "ok", "counters": child.get("counters", {})})
-
-
-@app.route("/api/child_counters/use", methods=["POST"])
-@login_required
-@parent_required
-def use_counter():
-    data = get_json_body()
-    child_username = data.get("child", "").lower().strip()
-    counter_id = data.get("counter_id")
-    try:
-        amount = int(data.get("amount", 0))
-    except (TypeError, ValueError):
-        amount = 0
-
-    child = state["users"].get(child_username)
-    if not child or child.get("role") != "child":
-        return jsonify({"status": "error"}), 404
-
-    if "counters" not in child:
-        child["counters"] = {}
-    if counter_id not in child["counters"]:
-        child["counters"][counter_id] = 0
-    child["counters"][counter_id] += amount
-    save_data()
-    return jsonify({"status": "ok", "counters": child["counters"]})
-
-
-@app.route("/api/child_counters/reset", methods=["POST"])
-@login_required
-@parent_required
-def reset_counter():
-    data = get_json_body()
-    child_username = data.get("child", "").lower().strip()
-    counter_id = data.get("counter_id")
-    child = state["users"].get(child_username)
-    if not child or child.get("role") != "child":
-        return jsonify({"status": "error"}), 404
-    if "counters" in child and counter_id in child["counters"]:
-        child["counters"][counter_id] = 0
+        delta = 1
+    if username in state["users"]:
+        state["users"][username]["points"] = state["users"][username].get("points", 0) + delta
         save_data()
-    return jsonify({"status": "ok", "counters": child.get("counters", {})})
+        return jsonify({"status": "ok", "points": state["users"][username]["points"]})
+    return jsonify({"status": "error"}), 404
 
 
-# ─── ALERTS (parent → child messages) ───────────────────────────────────────
-
-@app.route("/api/child_alert/set", methods=["POST"])
-@login_required
-@parent_required
-def set_alert():
-    data = get_json_body()
-    child_username = data.get("child", "").lower().strip()
-    message = data.get("message", "").strip()
-    counter_id = data.get("counter_id", "")
-    child = state["users"].get(child_username)
-    if not child or child.get("role") != "child":
-        return jsonify({"status": "error"}), 404
-    if not message:
-        return jsonify({"status": "error", "message": "Message vide"}), 400
-    if "alerts" not in child:
-        child["alerts"] = {}
-    child["alerts"][counter_id] = {
-        "message": message,
-        "timestamp": datetime.datetime.now().isoformat(),
-        "created_by": session["username"],
-    }
-    save_data()
-    return jsonify({"status": "ok"})
-
-
-@app.route("/api/child_alert/clear", methods=["POST"])
-@login_required
-@parent_required
-def clear_alert():
-    data = get_json_body()
-    child_username = data.get("child", "").lower().strip()
-    counter_id = data.get("counter_id", "")
-    child = state["users"].get(child_username)
-    if not child:
-        return jsonify({"status": "error"}), 404
-    if "alerts" in child and counter_id in child["alerts"]:
-        del child["alerts"][counter_id]
-        save_data()
-    return jsonify({"status": "ok"})
-
-
-@app.route("/api/child_alert/ack", methods=["POST"])
-@login_required
-def ack_alert():
-    data = get_json_body()
-    counter_id = data.get("counter_id", "")
-    child = state["users"].get(session["username"])
-    if not child or child.get("role") != "child":
-        return jsonify({"status": "error"}), 400
-    if "alerts" in child and counter_id in child["alerts"]:
-        del child["alerts"][counter_id]
-        save_data()
-    return jsonify({"status": "ok"})
-
-
-# ─── REDEEM (child spends points) ───────────────────────────────────────────
-
-@app.route("/api/redeem", methods=["POST"])
-@login_required
-def redeem():
-    data = get_json_body()
-    counter_id = data.get("counter_id")
-    counter_obj = None
-    for c in state["counters"]:
-        if c["id"] == counter_id:
-            counter_obj = c
-            break
-    if not counter_obj:
-        return jsonify({"status": "error", "message": "Compteur inconnu"}), 404
-
-    child = state["users"][session["username"]]
-    if child.get("role") != "child":
-        return jsonify({"status": "error", "message": "Enfants seulement"}), 400
-
-    price = counter_obj["price"]
-    if child.get("points", 0) < price:
-        return jsonify({"status": "error", "message": "Pas assez de points"}), 400
-
-    child["points"] -= price
-    if "counters" not in child:
-        child["counters"] = {}
-    if counter_id not in child["counters"]:
-        child["counters"][counter_id] = 0
-    child["counters"][counter_id] += counter_obj["division"]
-
-    save_data()
-    return jsonify({"status": "ok", "points": child["points"], "counters": child.get("counters", {})})
-
-
-# ─── USERS MANAGEMENT ────────────────────────────────────────────────────────
+# ─── USERS MANAGEMENT ─────────────────────────────────────────────────────────
 
 @app.route("/api/users/add", methods=["POST"])
 @login_required
@@ -733,9 +322,7 @@ def add_user():
         "is_active": True,
         "is_admin": is_admin_user,
         "points": 0,
-        "counters": {},
         "avatar": "",
-        "history": [],
     }
     save_data()
     return jsonify({"status": "ok"})
@@ -775,23 +362,6 @@ def delete_user():
     del state["users"][username]
     save_data()
     return jsonify({"status": "ok"})
-
-
-@app.route("/api/users/update_points", methods=["POST"])
-@login_required
-@parent_required
-def update_points():
-    data = get_json_body()
-    username = (data.get("username") or "").lower().strip()
-    try:
-        points = int(data.get("points", 0))
-    except (TypeError, ValueError):
-        points = 0
-    if username in state["users"]:
-        state["users"][username]["points"] = points
-        save_data()
-        return jsonify({"status": "ok"})
-    return jsonify({"status": "error"}), 404
 
 
 # ─── STATIC FILES ────────────────────────────────────────────────────────────

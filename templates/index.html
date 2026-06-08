@@ -20,7 +20,6 @@
             --primary-dim: #99cc00;
             --green: #2ecc71;
             --orange: #e67e22;
-            --yellow: #f1c40f;
             --red: #e74c3c;
             --grey: #888888;
             --text: #ffffff;
@@ -78,155 +77,145 @@
         .icon-btn.primary { background: var(--primary); color: #111; font-weight: 600; }
         .icon-btn.primary:hover { opacity: 0.9; }
 
-        /* ─── CHILD BADGES ─── */
-        .child-badges {
-            display: flex;
-            gap: 10px;
-            padding: 12px 16px;
-            overflow-x: auto;
-            flex-shrink: 0;
-            background: rgba(0,0,0,0.2);
-            backdrop-filter: blur(8px);
-        }
-        .child-badge {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 12px;
-            transition: background 0.2s;
-            min-width: 60px;
-            border: 1px solid transparent;
-        }
-        .child-badge:hover, .child-badge.active { background: rgba(255,255,255,0.08); border-color: var(--primary); }
-        .child-badge .avatar {
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            background: rgba(204,255,0,0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            color: var(--primary);
-            margin-bottom: 3px;
-        }
-        .child-badge .name { font-size: 0.65rem; color: var(--text-dim); }
-        .child-badge .pts { font-size: 0.85rem; font-weight: bold; color: var(--primary); }
-
-        /* ─── MAIN CONTENT ─── */
+        /* ─── MAIN ─── */
         main {
             flex: 1;
             overflow-y: auto;
-            padding: 12px 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .task-list { display: flex; flex-direction: column; gap: 8px; }
-        .task-card {
+
+        /* ─── CHILD VIEW ─── */
+        .child-home {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            width: 100%;
+            gap: 8px;
+        }
+        .child-home .avatar-big {
+            font-size: 5rem;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(204,255,0,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .child-home .name-big {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: var(--text-dim);
+        }
+        .child-home .points-big {
+            font-size: 4.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin-top: 8px;
+        }
+        .child-home .points-label {
+            font-size: 1rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+        }
+        .btn-values {
             background: var(--glass-bg);
             backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border);
+            color: var(--text);
+            padding: 14px 32px;
             border-radius: 14px;
-            padding: 14px 16px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            width: 100%;
+            max-width: 300px;
+        }
+        .btn-values:hover { background: rgba(255,255,255,0.12); }
+        .btn-values i { color: var(--primary); margin-right: 8px; }
+
+        /* ─── PARENT VIEW ─── */
+        .parent-list {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-top: 8px;
+        }
+        .child-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 16px 18px;
             display: flex;
             align-items: center;
             gap: 12px;
             transition: all 0.2s;
         }
-        .task-card .task-info { flex: 1; min-width: 0; }
-        .task-card .task-title { font-size: 0.95rem; font-weight: 500; }
-        .task-card .task-meta { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; display: flex; gap: 8px; flex-wrap: wrap; }
-        .task-card .task-meta .pts-badge {
-            background: var(--primary);
-            color: #111;
-            padding: 1px 8px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.7rem;
-        }
-        .task-card .task-actions { display: flex; gap: 6px; flex-shrink: 0; }
-        .task-card .task-status-btn {
-            width: 42px; height: 42px;
+        .child-card .c-avatar {
+            font-size: 2.2rem;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
-            border: 2px solid var(--grey);
-            background: transparent;
-            cursor: pointer;
-            transition: all 0.2s;
+            background: rgba(204,255,0,0.10);
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
+        }
+        .child-card .c-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .child-card .c-name {
             font-size: 1rem;
-            position: relative;
+            font-weight: 500;
+        }
+        .child-card .c-points {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin-right: 8px;
+        }
+        .child-card .c-pts-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+        .child-card .c-actions {
+            display: flex;
+            gap: 8px;
             flex-shrink: 0;
         }
-        .task-card .task-status-btn.status-proposed { border-color: var(--grey); background: rgba(136,136,136,0.15); }
-        .task-card .task-status-btn.status-in_progress { border-color: var(--orange); background: rgba(230,126,34,0.15); }
-        .task-card .task-status-btn.status-completed { border-color: var(--yellow); background: rgba(241,196,15,0.15); }
-        .task-card .task-status-btn.status-validated { border-color: var(--green); background: rgba(46,204,113,0.15); }
-        .task-card .task-status-btn.status-rejected { border-color: var(--red); background: rgba(231,76,60,0.15); }
-        .task-card .task-status-btn .tooltip {
-            display: none;
-            position: absolute;
-            bottom: 110%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.9);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            white-space: nowrap;
-            z-index: 20;
-        }
-        .task-card .task-status-btn:hover .tooltip { display: block; }
-        .task-card .action-btn {
-            padding: 6px 10px;
-            border-radius: 8px;
+        .pt-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
             border: none;
             cursor: pointer;
-            font-size: 0.7rem;
-            font-weight: 600;
-            transition: opacity 0.2s;
-        }
-        .task-card .action-btn:hover { opacity: 0.8; }
-        .action-btn.green { background: var(--green); color: white; }
-        .action-btn.red { background: var(--red); color: white; }
-        .action-btn.orange { background: var(--orange); color: white; }
-        .action-btn.grey { background: #555; color: white; }
-
-        /* ─── FOOTER ─── */
-        footer {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            border-top: 1px solid var(--glass-border);
-            padding: 10px 16px;
-            flex-shrink: 0;
-        }
-        .input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; }
-        .input-row:last-child { margin-bottom: 0; }
-        .input-row input, .input-row select {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid #555;
-            padding: 10px 12px;
-            border-radius: 10px;
-            color: white;
-            outline: none;
-            font-size: 0.85rem;
-        }
-        .input-row input:focus, .input-row select:focus { border-color: var(--primary); }
-        .input-row input::placeholder { color: #777; }
-        .flex-1 { flex: 1; min-width: 0; }
-        .btn-add {
-            background: var(--primary);
-            color: #111;
-            border: none;
-            border-radius: 10px;
-            padding: 10px 18px;
+            font-size: 1.4rem;
             font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s, opacity 0.2s;
         }
-        .btn-add:hover { opacity: 0.9; }
+        .pt-btn:active { transform: scale(0.9); }
+        .pt-btn.plus { background: var(--green); color: white; }
+        .pt-btn.plus:hover { opacity: 0.85; }
+        .pt-btn.minus { background: var(--red); color: white; }
+        .pt-btn.minus:hover { opacity: 0.85; }
 
         /* ─── MODALS ─── */
         .modal-overlay {
@@ -275,60 +264,45 @@
             cursor: pointer;
         }
         .modal-close:hover { color: white; }
-        .modal .list-item {
+        .list-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 10px 0;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .modal .list-item:last-child { border-bottom: none; }
-        .modal .list-item .item-name { font-weight: 500; }
-        .modal .list-item .item-detail { font-size: 0.8rem; color: var(--text-dim); }
-        .modal .list-item .item-actions { display: flex; gap: 6px; }
+        .list-item:last-child { border-bottom: none; }
+        .list-item .item-name { font-weight: 500; }
+        .list-item .item-detail { font-size: 0.8rem; color: var(--text-dim); }
+        .list-item .item-actions { display: flex; gap: 6px; }
         .del-btn { background: var(--red); color: white; border: none; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 0.75rem; }
 
-        /* ─── CHILD DETAIL MODAL ─── */
-        .counter-row {
+        .value-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .value-row input {
+            margin-bottom: 0;
+        }
+        .value-row input.vname { flex: 2; }
+        .value-row input.vpts { flex: 0 0 70px; }
+        .value-row input.vunit { flex: 1; }
+        .value-row .del-btn { height: 36px; align-self: flex-start; }
+
+        .value-display {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
+            padding: 12px 0;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .counter-row:last-child { border-bottom: none; }
-        .counter-row .counter-val { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
-        .counter-row .counter-actions { display: flex; gap: 6px; }
+        .value-display:last-child { border-bottom: none; }
+        .value-display .vd-name { font-weight: 500; }
+        .value-display .vd-rate { color: var(--primary); font-weight: 600; font-size: 1rem; }
+        .value-display .vd-detail { font-size: 0.8rem; color: var(--text-dim); }
 
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 480px) {
-            header { padding: 6px 8px; gap: 4px; }
-            .logo { font-size: 1rem; }
-            .header-actions { gap: 3px; }
-            .icon-btn { font-size: 0.6rem; padding: 4px 6px; }
-            .icon-btn i { margin-right: 2px; }
-            header img { height: 24px !important; width: 24px !important; }
-            .task-card { padding: 10px 12px; }
-            .task-card .task-status-btn { width: 36px; height: 36px; font-size: 0.85rem; }
-        }
-        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-dim); }
-        .empty-state i { font-size: 2.5rem; margin-bottom: 12px; color: var(--primary-dim); }
-        .suggest-wrap { position: relative; flex: 1; min-width: 0; }
-        .suggest-dropdown {
-            position: absolute; bottom: 100%; left: 0; right: 0; z-index: 50;
-            background: rgba(25,25,35,0.97); backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border); border-radius: 10px 10px 0 0;
-            max-height: 200px; overflow-y: auto; display: none;
-        }
-        .suggest-dropdown.open { display: block; }
-        .suggest-item {
-            padding: 8px 12px; cursor: pointer; display: flex; justify-content: space-between;
-            align-items: center; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.04);
-            transition: background 0.15s;
-        }
-        .suggest-item:last-child { border-bottom: none; }
-        .suggest-item:hover { background: rgba(204,255,0,0.1); }
-        .suggest-item .suggest-pts { background: var(--primary); color: #111; padding: 1px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 600; }
         .avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 12px 0; }
         .avatar-opt {
             font-size: 1.8rem; padding: 8px; text-align: center;
@@ -338,6 +312,23 @@
         .avatar-opt:hover { background: rgba(255,255,255,0.12); transform: scale(1.1); }
         .avatar-opt.selected { border-color: var(--primary); background: rgba(204,255,0,0.15); }
 
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-dim); }
+        .empty-state i { font-size: 2.5rem; margin-bottom: 12px; color: var(--primary-dim); }
+
+        @media (max-width: 480px) {
+            header { padding: 6px 8px; gap: 4px; }
+            .logo { font-size: 1rem; }
+            .header-actions { gap: 3px; }
+            .icon-btn { font-size: 0.6rem; padding: 4px 6px; }
+            .icon-btn i { margin-right: 2px; }
+            header img { height: 24px !important; width: 24px !important; }
+            .child-home .avatar-big { font-size: 3.5rem; width: 72px; height: 72px; }
+            .child-home .points-big { font-size: 3rem; }
+            .child-card { padding: 12px 14px; }
+            .child-card .c-avatar { font-size: 1.6rem; width: 40px; height: 40px; }
+            .child-card .c-points { font-size: 1.3rem; }
+            .pt-btn { width: 40px; height: 40px; font-size: 1.2rem; }
+        }
     </style>
 </head>
 <body>
@@ -351,40 +342,17 @@
         </div>
     </header>
 
-    <div id="child-badges" class="child-badges"></div>
-
     <main id="main-content">
-        <div class="task-list" id="task-list"></div>
     </main>
-
-    <footer id="footer-bar" style="display:none;">
-        <div class="input-row">
-            <div class="suggest-wrap">
-                <input type="text" id="inp-title" class="flex-1" placeholder="Nouvelle tache..." autocomplete="off" onfocus="window.showSuggestions()" oninput="window.filterSuggestions()">
-                <div class="suggest-dropdown" id="suggest-dropdown"></div>
-            </div>
-            <select id="inp-child" style="width:auto;">
-                <option value="">Tous les enfants</option>
-            </select>
-            <input type="number" id="inp-points" placeholder="Pts" style="width:60px;" min="1" value="5">
-            <label style="display:flex;align-items:center;gap:2px;font-size:0.65rem;color:var(--text-dim);cursor:pointer;flex-shrink:0;" title="Tache recurrente">
-                <input type="checkbox" id="inp-recurring" style="width:16px;height:16px;margin:0;cursor:pointer;"> <i class="fas fa-redo"></i>
-            </label>
-            <button class="btn-add" onclick="addTask()"><i class="fas fa-plus"></i></button>
-        </div>
-    </footer>
 
     <div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
         <div class="modal" id="modal-content"></div>
     </div>
 
-
-
     <script>
     (function() {
-        let state = {
-            user: null, tasks: [], rewards: [], counters: [],
-            role: '', username: '', children: [], allUsers: []
+        let appState = {
+            user: null, role: '', username: '', children: [], allUsers: [], valueTable: []
         };
         let pollTimer = null;
 
@@ -405,280 +373,199 @@
         async function loadData() {
             const data = await api('/api/whoami');
             if (!data) return;
-            state.user = data;
-            state.role = data.role;
-            state.username = data.username;
-            state.children = data.children || [];
-            state.allUsers = data.all_users || [];
-
-            const [tasksRes, countersRes] = await Promise.all([
-                api('/api/tasks'),
-                api('/api/counters'),
-            ]);
-            if (tasksRes) state.tasks = tasksRes.tasks || [];
-            if (countersRes) state.counters = countersRes.counters || [];
-
+            appState.user = data;
+            appState.role = data.role;
+            appState.username = data.username;
+            appState.children = data.children || [];
+            appState.allUsers = data.all_users || [];
+            appState.valueTable = data.value_table || [];
             render();
         }
 
         function render() {
             renderHeader();
-            renderBadges();
-            renderTasks();
-            renderFooter();
-            renderAlerts();
+            renderMain();
         }
 
         function renderHeader() {
             const el = document.getElementById('header-actions');
-            const isPar = state.role === 'parent' || state.role === 'admin';
-
+            const isPar = appState.role === 'parent' || appState.role === 'admin';
             let html = '';
             if (isPar) {
+                html += `<button class="icon-btn" onclick="window.showEditValues()"><i class="fas fa-table"></i> Valeurs</button>`;
                 html += `<button class="icon-btn" onclick="window.showManageUsers()"><i class="fas fa-users-cog"></i> Utilisateurs</button>`;
-                html += `<button class="icon-btn" onclick="window.showManageCounters()"><i class="fas fa-sliders-h"></i> Compteurs</button>`;
-            } else {
-                html += `<button class="icon-btn primary" onclick="window.showRedeem()"><i class="fas fa-shopping-cart"></i> Mes points (${state.user.points})</button>`;
             }
             html += `<button class="icon-btn" onclick="window.showSettings()"><i class="fas fa-cog"></i></button>`;
             html += `<button class="icon-btn" onclick="location.href='/logout'"><i class="fas fa-sign-out-alt"></i></button>`;
             el.innerHTML = html;
         }
 
-        function renderBadges() {
-            const el = document.getElementById('child-badges');
-            const children = state.role === 'child'
-                ? [{ username: state.username, display_name: state.user.display_name, points: state.user.points, counters: state.user.counters || {}, avatar: state.user.avatar || '' }]
-                : state.children;
+        function renderMain() {
+            const el = document.getElementById('main-content');
+            const isPar = appState.role === 'parent' || appState.role === 'admin';
+            el.innerHTML = isPar ? renderParentView() : renderChildView();
+        }
 
-            if (children.length === 0) { el.innerHTML = ''; return; }
+        function renderChildView() {
+            const u = appState.user;
+            const av = u.avatar || ((u.display_name || u.username)[0].toUpperCase());
+            let html = `<div class="child-home">
+                <div class="avatar-big">${av}</div>
+                <div class="name-big">${esc(u.display_name)}</div>
+                <div class="points-big">${u.points}</div>
+                <div class="points-label">Points</div>
+                <button class="btn-values" onclick="window.showValuesView()"><i class="fas fa-table"></i> Tableau des Valeurs</button>
+            </div>`;
+            return html;
+        }
 
+        function renderParentView() {
+            const children = appState.children;
+            if (children.length === 0) {
+                return `<div class="empty-state"><i class="fas fa-child"></i><p>Aucun enfant pour le moment.<br>Ajoutez-en dans Utilisateurs.</p></div>`;
+            }
+            let html = `<div class="parent-list">`;
             const avatars = ['🐶','🐱','🐼','🐨','🦊','🐰','🦁','🐯','🐸','🐵','🦄','🐷','🐭','🐹','🐻','🦋','🐙','🦀','🐢','🐊','🦉','🐧','🐦','🐤','🐌','🐝','🐞','🦇','🐺','🐗'];
-            let html = '';
             for (const c of children) {
                 const emoji = (c.avatar && avatars.includes(c.avatar)) ? c.avatar : ((c.display_name || c.username)[0].toUpperCase());
-                html += `<div class="child-badge" onclick="window.showChildDetail('${esc(c.username)}')" title="${esc(c.display_name)}">
-                    <div class="avatar">${emoji}</div>
-                    <div class="name">${esc(c.display_name)}</div>
-                    <div class="pts">${c.points} pts</div>
-                </div>`;
-            }
-            el.innerHTML = html;
-        }
-
-        function renderTasks() {
-            const el = document.getElementById('task-list');
-            const tasks = state.tasks;
-            const isPar = state.role === 'parent' || state.role === 'admin';
-
-            if (tasks.length === 0) {
-                el.innerHTML = `<div class="empty-state"><i class="fas fa-tasks"></i><p>Aucune tache pour le moment.</p></div>`;
-                return;
-            }
-
-            let html = '';
-            for (const t of tasks) {
-                const status = t.status;
-                const statusIcons = { proposed: 'far fa-circle', in_progress: 'fas fa-spinner', completed: 'fas fa-check', validated: 'fas fa-check-circle', rejected: 'fas fa-times-circle' };
-                const statusLabels = { proposed: 'A faire', in_progress: 'En cours', completed: 'A valider', validated: 'Validee', rejected: 'Refusee' };
-                const icon = statusIcons[status] || 'far fa-circle';
-                const label = statusLabels[status] || status;
-                const childName = t.claimed_by ? (state.allUsers.find(u => u.username === t.claimed_by)?.display_name || t.claimed_by) : '';
-
-                html += `<div class="task-card">
-                    <div class="task-info">
-                        <div class="task-title">${esc(t.title)} ${t.recurring ? '<i class="fas fa-redo" style="color:var(--primary);font-size:0.7rem;" title="Tache recurrente"></i>' : ''}</div>
-                        <div class="task-meta">
-                            <span class="pts-badge">${t.points} pts</span>
-                            ${childName ? `<span>${esc(childName)}</span>` : ''}
-                            ${t.assigned_to ? `<span style="color:var(--primary-dim);">→ ${esc(state.allUsers.find(u=>u.username===t.assigned_to)?.display_name||t.assigned_to)}</span>` : ''}
-                        </div>
+                html += `<div class="child-card">
+                    <div class="c-avatar">${emoji}</div>
+                    <div class="c-info">
+                        <div class="c-name">${esc(c.display_name)}</div>
+                        <span class="c-points">${c.points}</span> <span class="c-pts-label">pts</span>
                     </div>
-                    <div class="task-actions">`;
-
-                if (isPar) {
-                    html += `<button class="task-status-btn status-${status}" onclick="window.taskAction('${t.id}')"><i class="${icon}"></i><span class="tooltip">${label}</span></button>`;
-                    if (status === 'completed') {
-                        html += `<button class="action-btn green" onclick="window.validateTask('${t.id}')">Valider</button>`;
-                        html += `<button class="action-btn orange" onclick="window.improveTask('${t.id}')">Ameliorer</button>`;
-                        html += `<button class="action-btn red" onclick="window.rejectTask('${t.id}')">Refuser</button>`;
-                    }
-                    if (status === 'proposed' || status === 'rejected') {
-                        html += `<button class="action-btn grey" onclick="window.deleteTask('${t.id}')"><i class="fas fa-trash"></i></button>`;
-                    }
-                } else {
-                    if (status === 'proposed') {
-                        if (!t.assigned_to || t.assigned_to === state.username) {
-                            html += `<button class="action-btn orange" onclick="window.claimTask('${t.id}')">Je m'y mets</button>`;
-                        }
-                    } else if (status === 'in_progress' && t.claimed_by === state.username) {
-                        html += `<button class="action-btn green" onclick="window.completeTask('${t.id}')">J'ai termine !</button>`;
-                    } else if (status === 'validated' && t.claimed_by === state.username) {
-                        html += `<button class="action-btn primary" onclick="window.claimPoints('${t.id}')" style="background:var(--primary);color:#111;padding:6px 12px;border-radius:8px;border:none;font-weight:600;cursor:pointer;">Recuperer ${t.points} pts</button>`;
-                    } else {
-                        html += `<button class="task-status-btn status-${status}"><i class="${icon}"></i><span class="tooltip">${label}</span></button>`;
-                    }
-                }
-
-                html += `</div></div>`;
-            }
-            el.innerHTML = html;
-        }
-
-        function renderFooter() {
-            const el = document.getElementById('footer-bar');
-            const isPar = state.role === 'parent' || state.role === 'admin';
-            el.style.display = isPar ? '' : 'none';
-            if (!isPar) return;
-
-            const sel = document.getElementById('inp-child');
-            const currentVal = sel.value;
-            sel.innerHTML = '<option value="">Tous les enfants</option>';
-            for (const c of state.children) {
-                sel.innerHTML += `<option value="${esc(c.username)}">${esc(c.display_name)}</option>`;
-            }
-            if (currentVal) sel.value = currentVal;
-        }
-
-        function renderAlerts() {
-            const alerts = state.user && state.user.alerts;
-            if (!alerts || state.role !== 'child') return;
-            for (const [counterId, alertData] of Object.entries(alerts)) {
-                const counter = state.counters.find(c => c.id === counterId);
-                const name = counter ? counter.name : 'Compteur';
-                if (confirm(`📢 Message de vos parents - ${name} :\n\n${alertData.message}\n\nCliquez sur OK pour confirmer la lecture.`)) {
-                    api('/api/child_alert/ack', { method: 'POST', body: { counter_id: counterId } }).then(() => loadData());
-                }
-            }
-        }
-
-        // ─── TASK ACTIONS ───
-        window.taskAction = function(id) {
-            const t = state.tasks.find(t => t.id === id);
-            if (!t) return;
-            const isPar = state.role === 'parent' || state.role === 'admin';
-            if (isPar && t.status === 'rejected') {
-                window.resetTask(id);
-                return;
-            }
-            if (t.status === 'validated' && t.claimed_by === state.username && state.role === 'child') {
-                window.claimPoints(id);
-            }
-        };
-
-        window.resetTask = async function(id) {
-            await api('/api/tasks/reset', { method: 'POST', body: { id } });
-            loadData();
-        };
-
-        window.claimTask = async function(id) {
-            await api('/api/tasks/claim', { method: 'POST', body: { id } });
-            loadData();
-        };
-
-        window.completeTask = async function(id) {
-            await api('/api/tasks/complete', { method: 'POST', body: { id } });
-            loadData();
-        };
-
-        window.validateTask = async function(id) {
-            await api('/api/tasks/validate', { method: 'POST', body: { id } });
-            loadData();
-        };
-
-        window.rejectTask = async function(id) {
-            await api('/api/tasks/reject', { method: 'POST', body: { id } });
-            loadData();
-        };
-
-        window.improveTask = async function(id) {
-            await api('/api/tasks/improve', { method: 'POST', body: { id } });
-            loadData();
-        };
-
-        window.claimPoints = async function(id) {
-            await api('/api/tasks/claim_points', { method: 'POST', body: { id } });
-            loadData();
-        };
-
-        window.deleteTask = async function(id) {
-            if (!confirm('Supprimer cette tache ?')) return;
-            await api('/api/tasks/delete', { method: 'POST', body: { id } });
-            loadData();
-        };
-
-        window.addTask = async function() {
-            const title = document.getElementById('inp-title').value.trim();
-            const points = parseInt(document.getElementById('inp-points').value) || 5;
-            const assigned_to = document.getElementById('inp-child').value;
-            const recurring = document.getElementById('inp-recurring').checked;
-            if (!title) return;
-            await api('/api/tasks/add', { method: 'POST', body: { title, points, assigned_to, recurring } });
-            document.getElementById('inp-title').value = '';
-            document.getElementById('inp-points').value = '5';
-            document.getElementById('inp-recurring').checked = false;
-            document.getElementById('suggest-dropdown').classList.remove('open');
-            loadData();
-        };
-
-        window.showSuggestions = function() {
-            const input = document.getElementById('inp-title');
-            const dd = document.getElementById('suggest-dropdown');
-            if (!input.value.trim()) {
-                renderSuggestions();
-                dd.classList.add('open');
-            }
-        };
-
-        window.filterSuggestions = function() {
-            const input = document.getElementById('inp-title');
-            const dd = document.getElementById('suggest-dropdown');
-            renderSuggestions(input.value.trim().toLowerCase());
-            if (state.tasks.length > 0) dd.classList.add('open');
-            else dd.classList.remove('open');
-        };
-
-        function renderSuggestions(filter = '') {
-            const dd = document.getElementById('suggest-dropdown');
-            const seen = new Set();
-            const suggestions = [];
-            for (const t of state.tasks) {
-                const key = t.title.toLowerCase();
-                if (!seen.has(key)) {
-                    seen.add(key);
-                    if (!filter || key.includes(filter)) {
-                        suggestions.push({ title: t.title, points: t.points });
-                    }
-                }
-            }
-            if (suggestions.length === 0) {
-                dd.classList.remove('open');
-                return;
-            }
-            let html = '';
-            for (const s of suggestions) {
-                html += `<div class="suggest-item" onclick="window.pickSuggestion('${esc(s.title)}', ${s.points})">
-                    <span>${esc(s.title)}</span>
-                    <span class="suggest-pts">${s.points} pts</span>
+                    <div class="c-actions">
+                        <button class="pt-btn minus" onclick="window.adjustPoints('${esc(c.username)}',-1)" title="Enlever 1 point"><i class="fas fa-minus"></i></button>
+                        <button class="pt-btn plus" onclick="window.adjustPoints('${esc(c.username)}',1)" title="Ajouter 1 point"><i class="fas fa-plus"></i></button>
+                    </div>
                 </div>`;
             }
-            dd.innerHTML = html;
-            dd.classList.add('open');
+            html += `</div>`;
+            return html;
         }
 
-        window.pickSuggestion = function(title, points) {
-            document.getElementById('inp-title').value = title;
-            document.getElementById('inp-points').value = points;
-            document.getElementById('suggest-dropdown').classList.remove('open');
-            document.getElementById('inp-title').focus();
+        window.adjustPoints = async function(username, delta) {
+            const res = await api('/api/users/adjust_points', { method: 'POST', body: { username, delta } });
+            if (res && res.status === 'ok') {
+                const child = appState.children.find(c => c.username === username);
+                if (child) child.points = res.points;
+                const u = appState.allUsers.find(x => x.username === username);
+                if (u) u.points = res.points;
+                render();
+            }
         };
 
-        // ─── MANAGE USERS ───
+        window.showValuesView = function() {
+            const overlay = document.getElementById('modal-overlay');
+            const content = document.getElementById('modal-content');
+            const vt = appState.valueTable;
+            let html = `<button class="modal-close" onclick="closeModal()">&times;</button>
+                <h2><i class="fas fa-table"></i> Tableau des Valeurs</h2>`;
+            if (vt.length === 0) {
+                html += `<p style="color:var(--text-dim);text-align:center;">Aucune valeur configuree.</p>`;
+            } else {
+                for (const v of vt) {
+                    const pts = v.points || 0;
+                    const unit = v.unit || '';
+                    html += `<div class="value-display">
+                        <div>
+                            <div class="vd-name">${esc(v.name)}</div>
+                            ${unit ? `<div class="vd-detail">${unit}</div>` : ''}
+                        </div>
+                        <div class="vd-rate">${pts} pts</div>
+                    </div>`;
+                }
+            }
+            content.innerHTML = html;
+            overlay.classList.add('open');
+        };
+
+        window.showEditValues = function() {
+            const overlay = document.getElementById('modal-overlay');
+            const content = document.getElementById('modal-content');
+            const vt = appState.valueTable;
+            let html = `<button class="modal-close" onclick="closeModal()">&times;</button>
+                <h2><i class="fas fa-table"></i> Editer le Tableau des Valeurs</h2>
+                <p style="font-size:0.8rem;color:var(--text-dim);margin:-8px 0 12px;">Definissez les equivalences points → recompenses.</p>
+                <div id="values-editor">`;
+            for (let i = 0; i < vt.length; i++) {
+                const v = vt[i];
+                html += `<div class="value-row" data-idx="${i}">
+                    <input class="vname" type="text" value="${esc(v.name)}" placeholder="Nom">
+                    <input class="vpts" type="number" value="${v.points || 0}" min="1" placeholder="Pts">
+                    <input class="vunit" type="text" value="${esc(v.unit || '')}" placeholder="Unite (opt)">
+                    <button class="del-btn" onclick="window.removeValueRow(${i})"><i class="fas fa-times"></i></button>
+                </div>`;
+            }
+            html += `</div>
+                <button class="icon-btn" onclick="window.addValueRow()" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--glass-border);background:transparent;color:var(--text);margin-bottom:12px;"><i class="fas fa-plus"></i> Ajouter une ligne</button>
+                <div class="modal-actions">
+                    <button class="icon-btn primary" onclick="window.saveValues()" style="padding:12px;border-radius:10px;border:none;background:var(--primary);color:#111;font-weight:600;"><i class="fas fa-save"></i> Enregistrer</button>
+                </div>`;
+            content.innerHTML = html;
+            overlay.classList.add('open');
+        };
+
+        window.addValueRow = function() {
+            const editor = document.getElementById('values-editor');
+            const idx = editor.children.length;
+            const div = document.createElement('div');
+            div.className = 'value-row';
+            div.dataset.idx = idx;
+            div.innerHTML = `
+                <input class="vname" type="text" placeholder="Nom">
+                <input class="vpts" type="number" value="10" min="1" placeholder="Pts">
+                <input class="vunit" type="text" placeholder="Unite (opt)">
+                <button class="del-btn" onclick="window.removeValueRow(${idx})"><i class="fas fa-times"></i></button>
+            `;
+            editor.appendChild(div);
+            // Update all remove buttons
+            Array.from(editor.children).forEach((row, i) => {
+                row.dataset.idx = i;
+                const btn = row.querySelector('.del-btn');
+                if (btn) btn.setAttribute('onclick', `window.removeValueRow(${i})`);
+            });
+        };
+
+        window.removeValueRow = function(idx) {
+            const editor = document.getElementById('values-editor');
+            const rows = editor.children;
+            if (idx < rows.length) {
+                rows[idx].remove();
+                // Re-index
+                Array.from(editor.children).forEach((row, i) => {
+                    row.dataset.idx = i;
+                    const btn = row.querySelector('.del-btn');
+                    if (btn) btn.setAttribute('onclick', `window.removeValueRow(${i})`);
+                });
+            }
+        };
+
+        window.saveValues = async function() {
+            const editor = document.getElementById('values-editor');
+            const rows = editor.querySelectorAll('.value-row');
+            const table = [];
+            for (const row of rows) {
+                const name = row.querySelector('.vname').value.trim();
+                const pts = parseInt(row.querySelector('.vpts').value) || 0;
+                const unit = row.querySelector('.vunit').value.trim();
+                if (name && pts > 0) {
+                    table.push({ name, points: pts, unit });
+                }
+            }
+            const res = await api('/api/values/save', { method: 'POST', body: { value_table: table } });
+            if (res && res.status === 'ok') {
+                appState.valueTable = res.value_table || [];
+                render();
+                closeModal();
+            }
+        };
+
         window.showManageUsers = function() {
             const overlay = document.getElementById('modal-overlay');
             const content = document.getElementById('modal-content');
             let html = `<button class="modal-close" onclick="closeModal()">&times;</button>
-                <h2><i class="fas fa-users-cog"></i> Gestion Utilisateurs</h2>
+                <h2><i class="fas fa-users-cog"></i> Utilisateurs</h2>
                 <div style="margin-bottom:12px;">
                     <input type="text" id="mu-username" placeholder="Login">
                     <input type="password" id="mu-password" placeholder="Mot de passe">
@@ -688,7 +575,7 @@
                 </div>
                 <hr style="border-color:rgba(255,255,255,0.05);margin:12px 0;">
                 <h3 style="font-size:0.9rem;color:var(--text-dim);margin:0 0 8px;">Utilisateurs</h3>`;
-            for (const u of state.allUsers) {
+            for (const u of appState.allUsers) {
                 const isAdmin = u.is_admin;
                 const roleLabel = u.role === 'parent' ? 'Parent' : 'Enfant';
                 const av = (u.avatar && AVATARS.includes(u.avatar)) ? u.avatar : ((u.display_name || u.username)[0].toUpperCase());
@@ -731,230 +618,16 @@
             loadData().then(() => window.showManageUsers());
         };
 
-        window.changeUserAvatar = function(username) {
-            const current = state.allUsers.find(u => u.username === username)?.avatar || '';
-            let html = `<button class="modal-close" onclick="closeModal()">&times;</button>
-                <h2><i class="fas fa-user-edit"></i> Changer l'icone de ${esc(state.allUsers.find(u => u.username === username)?.display_name || username)}</h2>
-                <div class="avatar-grid">`;
-            for (const a of AVATARS) {
-                const sel = a === current ? 'selected' : '';
-                html += `<div class="avatar-opt ${sel}" onclick="window.pickUserAvatar('${esc(username)}','${a}')">${a}</div>`;
-            }
-            html += `</div></div>`;
-            const overlay = document.getElementById('modal-overlay');
-            const content = document.getElementById('modal-content');
-            content.innerHTML = html;
-            overlay.classList.add('open');
-        };
-
-        window.pickUserAvatar = async function(username, avatar) {
-            await api('/api/settings', { method: 'POST', body: { target_username: username, avatar } });
-            const u = state.allUsers.find(x => x.username === username);
-            if (u) u.avatar = avatar;
-            const c = state.children.find(x => x.username === username);
-            if (c) c.avatar = avatar;
-            render();
-            window.showManageUsers();
-        };
-
-        // ─── MANAGE REWARDS ───
-        // ─── MANAGE COUNTERS ───
-        window.showManageCounters = function() {
-            const overlay = document.getElementById('modal-overlay');
-            const content = document.getElementById('modal-content');
-            let html = `<button class="modal-close" onclick="closeModal()">&times;</button>
-                <h2><i class="fas fa-sliders-h"></i> Configuration Compteurs</h2>
-                <p style="font-size:0.8rem;color:var(--text-dim);margin:-8px 0 12px;">Les enfants peuvent echange leurs points contre ces compteurs.</p>
-                <div style="margin-bottom:12px;">
-                    <input type="text" id="mc-name" placeholder="Nom (ex: Temps d'ecran)">
-                    <input type="text" id="mc-unit" placeholder="Unite (ex: Minutes)">
-                    <input type="number" id="mc-division" placeholder="Division (ex: 10)" min="1" value="10">
-                    <input type="number" id="mc-price" placeholder="Prix en points" min="1" value="10">
-                    <button class="icon-btn primary" onclick="window.addCounter()" style="width:100%;padding:10px;border-radius:8px;border:none;background:var(--primary);color:#111;font-weight:600;"><i class="fas fa-plus"></i> Ajouter</button>
-                </div>
-                <hr style="border-color:rgba(255,255,255,0.05);margin:12px 0;">
-                <h3 style="font-size:0.9rem;color:var(--text-dim);margin:0 0 8px;">Compteurs</h3>`;
-            for (const c of state.counters) {
-                html += `<div class="list-item">
-                    <div>
-                        <div class="item-name">${esc(c.name)}</div>
-                        <div class="item-detail">${c.division} ${esc(c.unit)} | ${c.price} pts</div>
-                    </div>
-                    <div class="item-actions">
-                        <button class="del-btn" onclick="window.deleteCounter('${esc(c.id)}')"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>`;
-            }
-            content.innerHTML = html;
-            overlay.classList.add('open');
-        };
-
-        window.addCounter = async function() {
-            const name = document.getElementById('mc-name').value.trim();
-            const unit = document.getElementById('mc-unit').value.trim();
-            const division = parseInt(document.getElementById('mc-division').value) || 10;
-            const price = parseInt(document.getElementById('mc-price').value) || 10;
-            if (!name) return;
-            await api('/api/counters/add', { method: 'POST', body: { name, unit, division, price } });
-            document.getElementById('mc-name').value = '';
-            document.getElementById('mc-unit').value = '';
-            document.getElementById('mc-price').value = '10';
-            loadData().then(() => window.showManageCounters());
-        };
-
-        window.deleteCounter = async function(id) {
-            if (!confirm('Supprimer ce compteur ?')) return;
-            await api('/api/counters/delete', { method: 'POST', body: { id } });
-            loadData().then(() => window.showManageCounters());
-        };
-
-        // ─── CHILD DETAIL ───
-        window.showChildDetail = async function(childUsername) {
-            const overlay = document.getElementById('modal-overlay');
-            const content = document.getElementById('modal-content');
-            const isPar = state.role === 'parent' || state.role === 'admin';
-
-            if (!isPar && childUsername !== state.username) return;
-            if (isPar && childUsername === state.username) return;
-
-            const child = state.allUsers.find(u => u.username === childUsername) || state.children.find(c => c.username === childUsername);
-            if (!child) return;
-
-            const childCounters = child.counters || {};
-
-            let html = `<button class="modal-close" onclick="closeModal()">&times;</button>
-                <h2><i class="fas fa-child"></i> ${esc(child.display_name)}</h2>
-                <div style="text-align:center;margin-bottom:16px;">
-                    <span style="font-size:2rem;font-weight:bold;color:var(--primary);">${child.points} pts</span>
-                    ${isPar ? `<br><button class="icon-btn" onclick="window.editChildPoints('${esc(child.username)}')" style="margin-top:6px;font-size:0.7rem;"><i class="fas fa-edit"></i> Modifier les points</button>` : ''}
-                </div>`;
-
-            if (isPar) {
-                html += `<h3 style="font-size:0.9rem;color:var(--text-dim);margin:0 0 8px;">Compteurs</h3>`;
-                for (const c of state.counters) {
-                    const val = childCounters[c.id] || 0;
-                    const hasAlert = child.alerts && child.alerts[c.id];
-                    html += `<div class="counter-row">
-                        <span>${esc(c.name)}</span>
-                        <span class="counter-val">${val} ${esc(c.unit)}</span>
-                        <div class="counter-actions">
-                            <button class="action-btn orange" onclick="window.useCounter('${esc(childUsername)}','${esc(c.id)}',${c.division})" style="font-size:0.65rem;">+${c.division}</button>
-                            <button class="action-btn red" onclick="window.useCounter('${esc(childUsername)}','${esc(c.id)}',-${c.division})" style="font-size:0.65rem;">-${c.division}</button>
-                            ${hasAlert
-                                ? `<button class="action-btn grey" onclick="window.clearAlert('${esc(childUsername)}','${esc(c.id)}')" style="font-size:0.65rem;">Annuler l'alerte</button>`
-                                : `<button class="action-btn green" onclick="window.informChild('${esc(childUsername)}','${esc(c.id)}')" style="font-size:0.65rem;">Informer</button>`
-                            }
-                        </div>
-                    </div>`;
-                }
-                if (state.counters.length === 0) {
-                    html += `<p style="color:var(--text-dim);font-size:0.85rem;">Aucun compteur configure.</p>`;
-                }
-            } else {
-                html += `<h3 style="font-size:0.9rem;color:var(--text-dim);margin:0 0 8px;">Mes compteurs</h3>`;
-                for (const c of state.counters) {
-                    const val = childCounters[c.id] || 0;
-                    html += `<div class="counter-row">
-                        <span>${esc(c.name)}</span>
-                        <span class="counter-val">${val} ${esc(c.unit)}</span>
-                    </div>`;
-                }
-                if (state.counters.length === 0) {
-                    html += `<p style="color:var(--text-dim);font-size:0.85rem;">Aucun compteur.</p>`;
-                }
-            }
-
-            const history = (child.history || []).slice(-40).reverse();
-            if (history.length > 0) {
-                html += `<hr style="border-color:rgba(255,255,255,0.05);margin:12px 0;">
-                    <h3 style="font-size:0.85rem;color:var(--text-dim);margin:0 0 8px;"><i class="fas fa-history"></i> Historique</h3>`;
-                for (const h of history) {
-                    const d = new Date(h.timestamp);
-                    const dateStr = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-                    html += `<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.8rem;border-bottom:1px solid rgba(255,255,255,0.03);">
-                        <span>${esc(h.title)}</span>
-                        <span><span style="color:var(--primary);font-weight:600;">+${h.points} pts</span> <span style="color:var(--text-dim);font-size:0.65rem;">${dateStr}</span></span>
-                    </div>`;
-                }
-            }
-
-            content.innerHTML = html;
-            overlay.classList.add('open');
-        };
-
-        window.useCounter = async function(child, counterId, amount) {
-            await api('/api/child_counters/use', { method: 'POST', body: { child, counter_id: counterId, amount } });
-            loadData().then(() => window.showChildDetail(child));
-        };
-
-        window.informChild = async function(child, counterId) {
-            const msg = prompt('Message a transmettre a l\'enfant :');
-            if (!msg || !msg.trim()) return;
-            await api('/api/child_alert/set', { method: 'POST', body: { child, counter_id: counterId, message: msg.trim() } });
-            loadData().then(() => window.showChildDetail(child));
-        };
-
-        window.clearAlert = async function(child, counterId) {
-            await api('/api/child_alert/clear', { method: 'POST', body: { child, counter_id: counterId } });
-            loadData().then(() => window.showChildDetail(child));
-        };
-
-        // ─── REDEEM (child) ───
-        window.showRedeem = function() {
-            const overlay = document.getElementById('modal-overlay');
-            const content = document.getElementById('modal-content');
-            let html = `<button class="modal-close" onclick="closeModal()">&times;</button>
-                <h2><i class="fas fa-shopping-cart"></i> Utiliser mes points</h2>
-                <p style="color:var(--primary);font-size:1.2rem;font-weight:bold;margin:-8px 0 16px;">${state.user.points} pts disponibles</p>`;
-            const avail = state.counters.filter(c => c.price);
-            if (avail.length === 0) {
-                html += `<p style="color:var(--text-dim);">Aucun compteur disponible pour le moment.</p>`;
-            } else {
-                for (const c of avail) {
-                    const canAfford = state.user.points >= c.price;
-                    html += `<div class="list-item" style="${canAfford ? '' : 'opacity:0.5;'}">
-                        <div>
-                            <div class="item-name">${esc(c.name)}</div>
-                            <div class="item-detail">${c.division} ${esc(c.unit)} — ${c.price} pts</div>
-                        </div>
-                        <div class="item-actions">
-                            ${canAfford ? `<button class="action-btn green" onclick="window.redeem('${esc(c.id)}')">Echanger</button>` : `<span style="color:var(--red);font-size:0.75rem;">${c.price - state.user.points} pts manque</span>`}
-                        </div>
-                    </div>`;
-                }
-            }
-            content.innerHTML = html;
-            overlay.classList.add('open');
-        };
-
-        window.redeem = async function(counterId) {
-            if (!confirm('Echanger vos points ?')) return;
-            const res = await api('/api/redeem', { method: 'POST', body: { counter_id: counterId } });
-            if (res && res.status === 'ok') {
-                state.user.points = res.points;
-                state.user.counters = res.counters || {};
-                const childEntry = state.children.find(c => c.username === state.username);
-                if (childEntry) { childEntry.points = res.points; childEntry.counters = res.counters || {}; }
-                const userEntry = state.allUsers.find(u => u.username === state.username);
-                if (userEntry) { userEntry.points = res.points; userEntry.counters = res.counters || {}; }
-                render();
-                window.showRedeem();
-            } else if (res) {
-                alert(res.message || 'Erreur');
-            }
-        };
-
         // ─── SETTINGS / AVATAR ───
         const AVATARS = ['🐶','🐱','🐼','🐨','🦊','🐰','🦁','🐯','🐸','🐵','🦄','🐷','🐭','🐹','🐻','🦋','🐙','🦀','🐢','🐊','🦉','🐧','🐦','🐤','🐌','🐝','🐞','🦇','🐺','🐗'];
 
         window.showSettings = function() {
             const overlay = document.getElementById('modal-overlay');
             const content = document.getElementById('modal-content');
-            const current = state.user.avatar || '';
-
+            const current = appState.user.avatar || '';
             let html = `<button class="modal-close" onclick="closeModal()">&times;</button>
                 <h2><i class="fas fa-cog"></i> Paramètres</h2>
-                <div style="margin-bottom:8px;"><strong>${esc(state.user.display_name)}</strong> <span style="color:var(--text-dim);font-size:0.8rem;">(@${esc(state.username)})</span></div>
+                <div style="margin-bottom:8px;"><strong>${esc(appState.user.display_name)}</strong> <span style="color:var(--text-dim);font-size:0.8rem;">(@${esc(appState.username)})</span></div>
                 <h3 style="font-size:0.85rem;color:var(--text-dim);margin:0 0 4px;">Choisis ton icone</h3>
                 <div class="avatar-grid">`;
             for (const a of AVATARS) {
@@ -969,29 +642,45 @@
 
         window.pickAvatar = async function(avatar) {
             await api('/api/settings', { method: 'POST', body: { avatar } });
-            state.user.avatar = avatar;
-            const myEntry = state.allUsers.find(u => u.username === state.username);
+            appState.user.avatar = avatar;
+            const myEntry = appState.allUsers.find(u => u.username === appState.username);
             if (myEntry) myEntry.avatar = avatar;
-            const childEntry = state.children.find(c => c.username === state.username);
+            const childEntry = appState.children.find(c => c.username === appState.username);
             if (childEntry) childEntry.avatar = avatar;
             render();
             window.showSettings();
         };
 
+        window.changeUserAvatar = function(username) {
+            const current = appState.allUsers.find(u => u.username === username)?.avatar || '';
+            const user = appState.allUsers.find(u => u.username === username);
+            let html = `<button class="modal-close" onclick="closeModal()">&times;</button>
+                <h2><i class="fas fa-user-edit"></i> Changer l'icone de ${esc(user?.display_name || username)}</h2>
+                <div class="avatar-grid">`;
+            for (const a of AVATARS) {
+                const sel = a === current ? 'selected' : '';
+                html += `<div class="avatar-opt ${sel}" onclick="window.pickUserAvatar('${esc(username)}','${a}')">${a}</div>`;
+            }
+            html += `</div></div>`;
+            const overlay = document.getElementById('modal-overlay');
+            const content = document.getElementById('modal-content');
+            content.innerHTML = html;
+            overlay.classList.add('open');
+        };
+
+        window.pickUserAvatar = async function(username, avatar) {
+            await api('/api/settings', { method: 'POST', body: { target_username: username, avatar } });
+            const u = appState.allUsers.find(x => x.username === username);
+            if (u) u.avatar = avatar;
+            const c = appState.children.find(x => x.username === username);
+            if (c) c.avatar = avatar;
+            render();
+            window.showManageUsers();
+        };
+
         // ─── MODAL ───
         window.closeModal = function() {
             document.getElementById('modal-overlay').classList.remove('open');
-        };
-
-        window.editChildPoints = async function(username) {
-            const child = state.allUsers.find(u => u.username === username) || state.children.find(c => c.username === username);
-            if (!child) return;
-            const newPoints = prompt(`Points pour ${child.display_name} :`, child.points);
-            if (newPoints === null) return;
-            const val = parseInt(newPoints);
-            if (isNaN(val)) { alert('Nombre invalide'); return; }
-            await api('/api/users/update_points', { method: 'POST', body: { username, points: val } });
-            loadData().then(() => window.showChildDetail(username));
         };
 
         // ─── POLLING ───
