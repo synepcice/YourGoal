@@ -109,6 +109,17 @@ def load_data():
 
 load_data()
 
+# Clean old-format history file
+if os.path.exists(HISTORY_FILE):
+    try:
+        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+            first = f.readline()
+        if first and not first.startswith("Le "):
+            os.remove(HISTORY_FILE)
+            print("Cleaned old format history.txt")
+    except Exception:
+        pass
+
 
 @app.after_request
 def add_no_cache_headers(response):
