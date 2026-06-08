@@ -24,10 +24,12 @@ state_lock = threading.RLock()
 
 def append_history(actor, target, delta):
     try:
+        now = datetime.datetime.now()
+        date_str = now.strftime("%d-%m-%Y à %HH%M")
         actor_display = state["users"].get(actor, {}).get("display_name", actor)
         target_display = state["users"].get(target, {}).get("display_name", target)
-        sign = "+" if delta > 0 else ""
-        line = f"{actor_display} a {'ajouté' if delta > 0 else 'retiré'} {sign}{delta} point{'' if abs(delta) == 1 else 's'} à {target_display}\n"
+        action = "ajouté" if delta > 0 else "retiré"
+        line = f"Le {date_str}, {actor_display} a {action} {abs(delta)} point{'' if abs(delta) == 1 else 's'} à {target_display}\n"
         with HISTORY_FILE_LOCK:
             with open(HISTORY_FILE, "a", encoding="utf-8") as f:
                 f.write(line)
