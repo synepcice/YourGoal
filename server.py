@@ -406,6 +406,17 @@ def health():
     return "ok"
 
 
+@app.route("/api/debug")
+@login_required
+@parent_required
+def debug():
+    return jsonify({
+        "history_log_count": len(state.get("history_log", [])),
+        "history_log": state.get("history_log", []),
+        "users": list(state.get("users", {}).keys()),
+    })
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
     try:
