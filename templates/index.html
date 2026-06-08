@@ -365,8 +365,8 @@
             appState.children = data.children || [];
             appState.allUsers = data.all_users || [];
             appState.valueTable = data.value_table || [];
-            await loadHistory();
             render();
+            loadHistory();
         }
 
         function render() {
@@ -477,8 +477,8 @@
                 if (child) child.points = res.points;
                 const u = appState.allUsers.find(x => x.username === username);
                 if (u) u.points = res.points;
-                await loadHistory();
                 render();
+                loadHistory();
             }
         };
 
