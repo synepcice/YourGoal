@@ -15,9 +15,43 @@ app.config["PERMANENT_SESSION_LIFETIME"] = datetime.timedelta(days=30)
 
 DATA_FILE = "server_data.json"
 ADMIN_FILE = "Admin.txt"
+HISTORY_FILE = "history.txt"
+HISTORY_FILE_LOCK = threading.Lock()
 
-state = {"users": {}, "value_table": [], "history_log": []}
+state = {"users": {}, "value_table": []}
 state_lock = threading.RLock()
+
+
+def append_history(actor, target, delta):
+    try:
+        with HISTORY_FILE_LOCK:
+            with open(HISTORY_FILE, "a", encoding="utf-8") as f:
+                f.write(f"{datetime.datetime.now().isoformat()}|{actor}|{target}|{delta}\n")
+    except Exception as e:
+        print(f"Error writing history: {e}")
+
+
+def get_history(limit=50):
+    try:
+        with HISTORY_FILE_LOCK:
+            if not os.path.exists(HISTORY_FILE):
+                return []
+            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+        entries = []
+        for line in lines[-limit:]:
+            parts = line.strip().split("|")
+            if len(parts) == 4:
+                entries.append({
+                    "timestamp": parts[0],
+                    "actor": parts[1],
+                    "target": parts[2],
+                    "delta": int(parts[3]),
+                })
+        return entries
+    except Exception as e:
+        print(f"Error reading history: {e}")
+        return []
 
 
 def get_admin_username():
@@ -75,8 +109,6 @@ def load_data():
                         u["points"] = 0
             if "value_table" in loaded:
                 state["value_table"] = loaded["value_table"]
-            if "history_log" in loaded:
-                state["history_log"] = loaded["history_log"]
             save_data()
         except Exception as e:
             print(f"Error processing data: {e}")
@@ -85,8 +117,6 @@ def load_data():
         state["users"] = {}
     if not state["value_table"]:
         state["value_table"] = []
-    if not state["history_log"]:
-        state["history_log"] = []
 
 
 load_data()
@@ -256,7 +286,6 @@ def whoami():
         "avatar": user.get("avatar", ""),
         "children": children,
         "value_table": state.get("value_table", []),
-        "history_log": state.get("history_log", []) if is_parent(session["username"]) else [],
         "all_users": [
             {"username": u, "display_name": d["display_name"], "role": d.get("role"), "points": d.get("points", 0), "avatar": d.get("avatar", "")}
             for u, d in state["users"].items()
@@ -290,19 +319,18 @@ def adjust_points():
         delta = 1
     if username in state["users"]:
         state["users"][username]["points"] = state["users"][username].get("points", 0) + delta
-        if "history_log" not in state:
-            state["history_log"] = []
-        state["history_log"].append({
-            "actor": session["username"],
-            "target": username,
-            "delta": delta,
-            "timestamp": datetime.datetime.now().isoformat()
-        })
-        if len(state["history_log"]) > 50:
-            state["history_log"] = state["history_log"][-50:]
+        append_history(session["username"], username, delta)
         save_data()
-        return jsonify({"status": "ok", "points": state["users"][username]["points"], "history_log": state["history_log"]})
+        points = state["users"][username]["points"]
+        return jsonify({"status": "ok", "points": points})
     return jsonify({"status": "error"}), 404
+
+
+@app.route("/api/history")
+@login_required
+@parent_required
+def history():
+    return jsonify({"history": get_history()})
 
 
 # ─── USERS MANAGEMENT ─────────────────────────────────────────────────────────
@@ -404,17 +432,6 @@ def serve_static(filename):
 @app.route("/health")
 def health():
     return "ok"
-
-
-@app.route("/api/debug")
-@login_required
-@parent_required
-def debug():
-    return jsonify({
-        "history_log_count": len(state.get("history_log", [])),
-        "history_log": state.get("history_log", []),
-        "users": list(state.get("users", {}).keys()),
-    })
 
 
 if __name__ == "__main__":

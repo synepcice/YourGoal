@@ -336,14 +336,17 @@
         }
 
         function api(path, options = {}) {
-            const sep = path.includes('?') ? '&' : '?';
-            const cachePath = path + sep + '_t=' + Date.now();
             const defaults = { credentials: 'same-origin', headers: { 'Content-Type': 'application/json' } };
             if (options.body) options.body = JSON.stringify(options.body);
-            return fetch(cachePath, { ...defaults, ...options }).then(r => {
+            return fetch(path, { ...defaults, ...options }).then(r => {
                 if (r.redirected && r.url.endsWith('/login')) { window.location = '/login'; return null; }
                 return r.json();
             });
+        }
+
+        async function loadHistory() {
+            const data = await api('/api/history');
+            if (data) window._historyCache = data.history || [];
         }
 
         async function loadData() {
@@ -355,6 +358,7 @@
             appState.children = data.children || [];
             appState.allUsers = data.all_users || [];
             appState.valueTable = data.value_table || [];
+            await loadHistory();
             render();
         }
 
@@ -452,13 +456,12 @@
                 html += `</div>`;
             }
             // History log
-            const log = appState.history_log || [];
+            const log = window._historyCache || [];
             html += `<div style="width:100%;max-width:500px;margin-top:16px;">
                 <h3 style="font-size:0.85rem;color:var(--text-dim);margin:0 0 8px;letter-spacing:1px;">Historique</h3>`;
             if (log.length > 0) {
                 html += `<div style="max-height:240px;overflow-y:auto;background:var(--glass-bg);border-radius:12px;padding:6px 0;">`;
-                const displayLog = log.slice(-50).reverse();
-                for (const entry of displayLog) {
+                for (const entry of log) {
                     const actor = appState.allUsers.find(u => u.username === entry.actor)?.display_name || entry.actor;
                     const target = appState.allUsers.find(u => u.username === entry.target)?.display_name || entry.target;
                     const sign = entry.delta > 0 ? '+' : '';
@@ -480,12 +483,12 @@
         window.adjustPoints = async function(username, delta) {
             const res = await api('/api/users/adjust_points', { method: 'POST', body: { username, delta } });
             if (res && res.status === 'ok') {
-                if (res.history_log) appState.history_log = res.history_log;
                 const child = appState.children.find(c => c.username === username);
                 if (child) child.points = res.points;
                 const u = appState.allUsers.find(x => x.username === username);
                 if (u) u.points = res.points;
-                loadData();
+                await loadHistory();
+                render();
             }
         };
 

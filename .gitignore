@@ -3,6 +3,7 @@ __pycache__/
 *.pyo
 server_data.json
 Admin.txt
+history.txt
 *.p12
 SSL_Password.txt
 cert.pem
