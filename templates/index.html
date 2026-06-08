@@ -472,11 +472,7 @@
         window.adjustPoints = async function(username, delta) {
             const res = await api('/api/users/adjust_points', { method: 'POST', body: { username, delta } });
             if (res && res.status === 'ok') {
-                const child = appState.children.find(c => c.username === username);
-                if (child) child.points = res.points;
-                const u = appState.allUsers.find(x => x.username === username);
-                if (u) u.points = res.points;
-                render();
+                loadData();
             }
         };
 
