@@ -16,7 +16,7 @@ app.config["PERMANENT_SESSION_LIFETIME"] = datetime.timedelta(days=30)
 DATA_FILE = "server_data.json"
 ADMIN_FILE = "Admin.txt"
 
-state = {"users": {}, "value_table": []}
+state = {"users": {}, "value_table": [], "history_log": []}
 state_lock = threading.RLock()
 
 
@@ -75,6 +75,8 @@ def load_data():
                         u["points"] = 0
             if "value_table" in loaded:
                 state["value_table"] = loaded["value_table"]
+            if "history_log" in loaded:
+                state["history_log"] = loaded["history_log"]
             save_data()
         except Exception as e:
             print(f"Error processing data: {e}")
@@ -83,6 +85,8 @@ def load_data():
         state["users"] = {}
     if not state["value_table"]:
         state["value_table"] = []
+    if not state["history_log"]:
+        state["history_log"] = []
 
 
 load_data()
@@ -252,6 +256,7 @@ def whoami():
         "avatar": user.get("avatar", ""),
         "children": children,
         "value_table": state.get("value_table", []),
+        "history_log": state.get("history_log", []) if is_parent(session["username"]) else [],
         "all_users": [
             {"username": u, "display_name": d["display_name"], "role": d.get("role"), "points": d.get("points", 0), "avatar": d.get("avatar", "")}
             for u, d in state["users"].items()
@@ -285,6 +290,16 @@ def adjust_points():
         delta = 1
     if username in state["users"]:
         state["users"][username]["points"] = state["users"][username].get("points", 0) + delta
+        if "history_log" not in state:
+            state["history_log"] = []
+        state["history_log"].append({
+            "actor": session["username"],
+            "target": username,
+            "delta": delta,
+            "timestamp": datetime.datetime.now().isoformat()
+        })
+        if len(state["history_log"]) > 50:
+            state["history_log"] = state["history_log"][-50:]
         save_data()
         return jsonify({"status": "ok", "points": state["users"][username]["points"]})
     return jsonify({"status": "error"}), 404
