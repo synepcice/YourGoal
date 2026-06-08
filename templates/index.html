@@ -465,12 +465,14 @@
                 html += `<p style="color:var(--text-dim);text-align:center;">Aucune valeur configuree.</p>`;
             } else {
                 for (const v of vt) {
-                    const pts = v.points || 0;
-                    const unit = v.unit || '';
-                    html += `<div class="value-display">
+            const pts = v.points || 0;
+            const val = v.value || 1;
+            const unit = v.unit || '';
+            const detail = unit ? `${val} ${esc(unit)}` : val;
+            html += `<div class="value-display">
                         <div>
                             <div class="vd-name">${esc(v.name)}</div>
-                            ${unit ? `<div class="vd-detail">${unit}</div>` : ''}
+                            <div class="vd-detail">${detail}</div>
                         </div>
                         <div class="vd-rate">${pts} pts</div>
                     </div>`;
@@ -493,7 +495,9 @@
                 html += `<div class="value-row" data-idx="${i}">
                     <input class="vname" type="text" value="${esc(v.name)}" placeholder="Nom">
                     <input class="vpts" type="number" value="${v.points || 0}" min="1" placeholder="Pts">
-                    <input class="vunit" type="text" value="${esc(v.unit || '')}" placeholder="Unite (opt)">
+                    <span style="color:var(--text-dim);font-size:1.2rem;">=</span>
+                    <input class="vval" type="number" value="${v.value || 1}" min="1" placeholder="Val" style="width:60px;">
+                    <input class="vunit" type="text" value="${esc(v.unit || '')}" placeholder="Unite">
                     <button class="del-btn" onclick="window.removeValueRow(${i})"><i class="fas fa-times"></i></button>
                 </div>`;
             }
@@ -515,7 +519,9 @@
             div.innerHTML = `
                 <input class="vname" type="text" placeholder="Nom">
                 <input class="vpts" type="number" value="10" min="1" placeholder="Pts">
-                <input class="vunit" type="text" placeholder="Unite (opt)">
+                <span style="color:var(--text-dim);font-size:1.2rem;">=</span>
+                <input class="vval" type="number" value="1" min="1" placeholder="Val" style="width:60px;">
+                <input class="vunit" type="text" placeholder="Unite">
                 <button class="del-btn" onclick="window.removeValueRow(${idx})"><i class="fas fa-times"></i></button>
             `;
             editor.appendChild(div);
@@ -548,9 +554,10 @@
             for (const row of rows) {
                 const name = row.querySelector('.vname').value.trim();
                 const pts = parseInt(row.querySelector('.vpts').value) || 0;
+                const val = parseInt(row.querySelector('.vval').value) || 1;
                 const unit = row.querySelector('.vunit').value.trim();
                 if (name && pts > 0) {
-                    table.push({ name, points: pts, unit });
+                    table.push({ name, points: pts, value: val, unit });
                 }
             }
             const res = await api('/api/values/save', { method: 'POST', body: { value_table: table } });
